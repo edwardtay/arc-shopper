@@ -3,521 +3,236 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Arc Agentic Commerce</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <title>Arc Agent Shop</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
       --bg: #09090b;
-      --surface: #111113;
-      --surface-2: #18181b;
-      --surface-3: #1f1f23;
+      --surface: #18181b;
       --border: #27272a;
-      --border-dim: #1c1c1f;
       --text: #ffffff;
-      --text-2: #e4e4e7;
-      --text-3: #d4d4d8;
-      --accent: #6366f1;
-      --accent-2: #818cf8;
+      --text-2: #a1a1aa;
+      --accent: #8b5cf6;
       --success: #10b981;
-      --success-dim: rgba(16, 185, 129, 0.15);
-      --warning: #f59e0b;
-      --warning-dim: rgba(245, 158, 11, 0.15);
-      --error: #ef4444;
-      --error-dim: rgba(239, 68, 68, 0.15);
-      --arc: #8b5cf6;
-      --usdc: #2775ca;
-      --mono: 'JetBrains Mono', 'SF Mono', monospace;
     }
-    html, body { height: 100%; overflow: hidden; }
     body {
-      font-family: 'Inter', -apple-system, sans-serif;
+      font-family: 'Inter', sans-serif;
       background: var(--bg);
       color: var(--text);
-      font-size: 15px;
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
     }
-    .app { display: grid; grid-template-rows: 56px 1fr; height: 100%; }
 
     /* Header */
     header {
-      padding: 0 16px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border-dim);
+      padding: 16px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      border-bottom: 1px solid var(--border);
     }
     .logo {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       font-weight: 700;
-      font-size: 16px;
-      letter-spacing: -0.02em;
+      font-size: 18px;
     }
     .logo-icon {
-      width: 32px;
-      height: 32px;
-      background: linear-gradient(135deg, var(--arc) 0%, var(--accent) 100%);
-      border-radius: 8px;
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent), #6366f1);
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .logo-icon i { width: 18px; height: 18px; color: white; }
-    .logo span { color: var(--text-2); font-weight: 400; }
-
-    .header-center {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      background: var(--bg);
-      padding: 3px;
-      border-radius: 8px;
-    }
-    .tab {
-      padding: 8px 16px;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-2);
-      background: none;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.15s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .tab i { width: 16px; height: 16px; }
-    .tab.active { background: var(--surface-2); color: var(--text); }
-    .tab:hover:not(.active) { color: var(--text); }
-
-    .header-right {
+    .logo-icon i { width: 20px; height: 20px; color: white; }
+    .balance {
       display: flex;
       align-items: center;
       gap: 12px;
-    }
-    .network-badge {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 12px;
-      background: var(--success-dim);
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--success);
-    }
-    .network-badge::before {
-      content: '';
-      width: 6px;
-      height: 6px;
-      background: var(--success);
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-
-    .connect-btn {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 14px;
-      background: var(--accent);
-      border: none;
-      border-radius: 6px;
-      color: white;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .connect-btn:hover { background: var(--accent-2); }
-    .connect-btn i { width: 14px; height: 14px; }
-    .connect-btn.connected {
-      background: var(--surface-2);
-      color: var(--text);
-    }
-
-    /* Main Layout */
-    main { display: flex; overflow: hidden; }
-    .panel { display: none; flex: 1; overflow: hidden; }
-    .panel.active { display: flex; }
-
-    /* Dashboard Layout */
-    .dashboard {
-      display: grid;
-      grid-template-columns: 320px 1fr 340px;
-      width: 100%;
-      height: 100%;
-      gap: 1px;
-      background: var(--border-dim);
-    }
-
-    .col { background: var(--bg); overflow-y: auto; }
-    .col-left { background: var(--surface); }
-    .col-right { background: var(--surface); }
-
-    /* Section */
-    .section {
-      padding: 16px;
-      border-bottom: 1px solid var(--border-dim);
-    }
-    .section:last-child { border-bottom: none; }
-    .section-title {
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-2);
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .section-title i { width: 14px; height: 14px; }
-
-    /* Agent Identity */
-    .agent-identity {
-      background: var(--bg);
-      border-radius: 10px;
-      padding: 14px;
-    }
-    .agent-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-    .agent-avatar {
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, var(--arc) 0%, var(--accent) 100%);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .agent-avatar i { width: 20px; height: 20px; color: white; }
-    .agent-name { font-weight: 600; font-size: 16px; }
-    .agent-address {
-      font-family: var(--mono);
-      font-size: 13px;
-      color: var(--text-2);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .agent-address a { color: var(--accent-2); text-decoration: none; }
-    .agent-address a:hover { text-decoration: underline; }
-    .verified-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 3px 8px;
-      background: var(--success-dim);
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--success);
-    }
-    .verified-badge i { width: 12px; height: 12px; }
-
-    /* Stats Grid */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-    .stat-box {
-      background: var(--surface-2);
-      padding: 12px;
-      border-radius: 8px;
-    }
-    .stat-value {
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-    .stat-value.success { color: var(--success); }
-    .stat-value.accent { color: var(--accent-2); }
-    .stat-label {
-      font-size: 12px;
-      color: var(--text-2);
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      margin-top: 4px;
-    }
-
-    /* Treasury */
-    .treasury-box {
-      background: var(--bg);
-      border-radius: 10px;
-      padding: 14px;
-    }
-    .treasury-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
-    .treasury-balance {
-      font-size: 28px;
-      font-weight: 700;
-      font-family: var(--mono);
-    }
-    .treasury-badge {
-      padding: 5px 10px;
-      background: var(--usdc);
-      border-radius: 5px;
-      font-size: 12px;
-      font-weight: 700;
-      color: white;
-    }
-    .wallet-address {
-      margin: 8px 0;
-      padding: 8px 12px;
-      background: var(--surface-2);
-      border-radius: 6px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-    }
-    .wallet-addr-link {
-      color: var(--text-2);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-    }
-    .wallet-addr-link:hover {
-      color: var(--accent);
-    }
-    .faucet-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      margin-top: 10px;
       padding: 10px 16px;
-      background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-      color: white;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-      text-decoration: none;
-      transition: opacity 0.2s;
+      background: var(--surface);
+      border-radius: 10px;
     }
-    .faucet-btn:hover {
-      opacity: 0.9;
-    }
-    .faucet-btn.funded {
-      background: var(--success);
-      pointer-events: none;
-    }
-    .treasury-tiers {
-      display: flex;
-      gap: 8px;
-    }
-    .tier {
-      flex: 1;
-      padding: 12px;
-      background: var(--surface-2);
-      border-radius: 6px;
-      text-align: center;
-    }
-    .tier-name {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      color: var(--text-2);
-      margin-bottom: 4px;
-    }
-    .tier-value {
-      font-size: 15px;
-      font-weight: 600;
-      font-family: var(--mono);
-    }
-    .tier.hot .tier-value { color: var(--warning); }
-    .tier.warm .tier-value { color: var(--accent-2); }
-    .tier.cold .tier-value { color: var(--success); }
-
-    /* Policy */
-    .policy-grid {
-      display: grid;
-      gap: 8px;
-    }
-    .policy-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 12px;
-      background: var(--bg);
-      border-radius: 8px;
-    }
-    .policy-name {
-      font-size: 14px;
-      color: var(--text);
-    }
-    .policy-value {
-      font-size: 14px;
-      font-weight: 600;
-      font-family: var(--mono);
+    .balance-amount {
+      font-size: 20px;
+      font-weight: 700;
       color: var(--success);
     }
-    .policy-used {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .policy-bar {
-      width: 60px;
-      height: 4px;
-      background: var(--surface-3);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-    .policy-bar-fill {
-      height: 100%;
-      background: var(--success);
-      border-radius: 2px;
-      transition: width 0.3s;
-    }
-    .policy-bar-fill.warning { background: var(--warning); }
-    .policy-bar-fill.danger { background: var(--error); }
-
-    /* Integrations */
-    .int-grid { display: grid; gap: 6px; }
-    .int-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 12px;
-      background: var(--bg);
-      border-radius: 8px;
-    }
-    .int-name {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text);
-    }
-    .int-status {
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    .balance-label {
       font-size: 12px;
+      color: var(--text-2);
+      background: #2775ca;
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: white;
       font-weight: 600;
     }
-    .int-status.live { color: var(--success); }
-    .int-status.live::before {
-      content: '';
-      width: 6px;
-      height: 6px;
-      background: var(--success);
-      border-radius: 50%;
-    }
-    .int-status.off { color: var(--text-2); }
 
-    /* Main Content - Commerce */
-    .commerce-area {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
+    /* Main */
+    main {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 40px 24px;
     }
-
-    .query-section {
-      padding: 20px 24px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border-dim);
-    }
-    .query-title {
-      font-size: 22px;
+    h1 {
+      font-size: 32px;
       font-weight: 700;
-      letter-spacing: -0.02em;
-      margin-bottom: 6px;
+      text-align: center;
+      margin-bottom: 8px;
     }
-    .query-sub {
-      font-size: 14px;
+    .subtitle {
+      text-align: center;
       color: var(--text-2);
+      margin-bottom: 32px;
+    }
+
+    /* Search */
+    .search-box {
+      display: flex;
+      gap: 12px;
       margin-bottom: 20px;
     }
-    .query-row {
-      display: flex;
-      gap: 10px;
-    }
-    .query-input {
+    .search-input {
       flex: 1;
-      padding: 14px 18px;
-      background: var(--bg);
+      padding: 16px 20px;
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 12px;
       color: var(--text);
-      font-size: 15px;
-      font-family: inherit;
+      font-size: 16px;
     }
-    .query-input:focus {
+    .search-input:focus {
       outline: none;
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
     }
-    .query-input::placeholder { color: var(--text-2); }
-    .query-btn {
-      padding: 14px 24px;
+    .search-btn {
+      padding: 16px 28px;
       background: var(--accent);
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       color: white;
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 8px;
-      transition: all 0.15s;
     }
-    .query-btn:hover { background: var(--accent-2); }
-    .query-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .query-btn i { width: 18px; height: 18px; }
+    .search-btn:hover { opacity: 0.9; }
+    .search-btn:disabled { opacity: 0.5; }
+    .search-btn i { width: 20px; height: 20px; }
 
-    .quick-tags {
+    /* Quick buttons */
+    .quick-btns {
       display: flex;
       gap: 8px;
-      margin-top: 14px;
       flex-wrap: wrap;
+      margin-bottom: 40px;
     }
-    .quick-tag {
-      padding: 8px 14px;
-      background: var(--surface-2);
+    .quick-btn {
+      padding: 10px 16px;
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 13px;
+      border-radius: 8px;
       color: var(--text);
+      font-size: 14px;
       cursor: pointer;
-      transition: all 0.15s;
     }
-    .quick-tag:hover {
-      border-color: var(--accent);
-      background: var(--surface-3);
-    }
+    .quick-btn:hover { border-color: var(--accent); }
 
     /* Results */
-    .results-area {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px 24px;
+    .result {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
     }
-
-    .empty-state {
+    .result-header {
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .result-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--accent), var(--success));
+      border-radius: 12px;
+      display: flex;
       align-items: center;
       justify-content: center;
-      height: 100%;
+    }
+    .result-icon i { width: 24px; height: 24px; color: white; }
+    .result-title { font-size: 18px; font-weight: 600; }
+    .result-status {
+      margin-left: auto;
+      padding: 6px 12px;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .result-status.error {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+    }
+
+    /* Product card */
+    .product {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: var(--bg);
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+    .product-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--surface);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-2);
+    }
+    .product-icon i { width: 24px; height: 24px; }
+    .product-info { flex: 1; }
+    .product-name { font-weight: 600; margin-bottom: 4px; }
+    .product-desc { font-size: 14px; color: var(--text-2); }
+    .product-price {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--success);
+    }
+
+    /* Order details */
+    .order-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .order-row:last-child { border-bottom: none; }
+    .order-label { color: var(--text-2); }
+    .order-value { font-weight: 500; }
+    .order-value.success { color: var(--success); }
+    .order-value a { color: var(--accent); text-decoration: none; }
+    .order-value a:hover { text-decoration: underline; }
+
+    /* Empty state */
+    .empty {
       text-align: center;
+      padding: 60px 20px;
+      color: var(--text-2);
     }
     .empty-icon {
       width: 64px;
@@ -527,903 +242,138 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 16px;
-      color: var(--text-3);
+      margin: 0 auto 16px;
     }
     .empty-icon i { width: 28px; height: 28px; }
-    .empty-title {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-    .empty-sub {
-      font-size: 14px;
-      color: var(--text-2);
-      max-width: 320px;
-    }
-
-    /* Result Card */
-    .result-card {
-      background: var(--surface);
-      border-radius: 12px;
-      border: 1px solid var(--border-dim);
-      overflow: hidden;
-      margin-bottom: 16px;
-    }
-    .result-card.success { border-color: var(--success); }
-    .result-card.error { border-color: var(--error); }
-
-    .result-header {
-      padding: 14px 18px;
-      background: var(--surface-2);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border-dim);
-    }
-    .result-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 600;
-      font-size: 16px;
-    }
-    .result-title i { width: 20px; height: 20px; }
-    .result-title.success i { color: var(--success); }
-    .result-title.error i { color: var(--error); }
-    .result-meta {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .result-badge {
-      padding: 5px 10px;
-      background: var(--bg);
-      border-radius: 5px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-2);
-      font-family: var(--mono);
-    }
-
-    .result-body { padding: 18px; }
-
-    /* Thinking */
-    .thinking-steps { margin-bottom: 20px; }
-    .thinking-label {
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-2);
-      margin-bottom: 14px;
-    }
-    .thinking-step {
-      display: flex;
-      gap: 14px;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--border-dim);
-    }
-    .thinking-step:last-child { border-bottom: none; }
-    .step-num {
-      width: 28px;
-      height: 28px;
-      background: var(--accent);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-weight: 700;
-      color: white;
-      flex-shrink: 0;
-    }
-    .step-content { flex: 1; }
-    .step-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; color: var(--text); }
-    .step-desc { font-size: 14px; color: var(--text-2); }
-
-    /* Product Result */
-    .product-card {
-      display: flex;
-      gap: 16px;
-      padding: 16px;
-      background: var(--bg);
-      border-radius: 10px;
-      margin-bottom: 16px;
-    }
-    .product-icon {
-      width: 56px;
-      height: 56px;
-      background: var(--surface-2);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-2);
-      flex-shrink: 0;
-    }
-    .product-icon i { width: 24px; height: 24px; }
-    .product-info { flex: 1; }
-    .product-name { font-weight: 600; font-size: 17px; margin-bottom: 6px; }
-    .product-desc { font-size: 14px; color: var(--text-2); margin-bottom: 12px; }
-    .product-footer { display: flex; align-items: center; gap: 12px; }
-    .product-price {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--success);
-      font-family: var(--mono);
-    }
-    .product-source {
-      padding: 5px 10px;
-      border-radius: 5px;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-    .product-source.demo { background: var(--arc); color: white; }
-
-    /* Order Summary */
-    .order-summary {
-      background: var(--bg);
-      border-radius: 10px;
-      padding: 16px;
-    }
-    .order-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px 0;
-      font-size: 14px;
-    }
-    .order-row .label { color: var(--text-2); }
-    .order-row .value { font-weight: 500; color: var(--text); }
-    .order-row .value.success { color: var(--success); }
-    .order-row.total {
-      border-top: 1px solid var(--border-dim);
-      margin-top: 10px;
-      padding-top: 14px;
-      font-size: 16px;
-    }
-    .tx-link {
-      color: var(--accent-2);
-      text-decoration: none;
-      font-family: var(--mono);
-      font-size: 13px;
-    }
-    .tx-link:hover { text-decoration: underline; }
-
-    /* Right Column - Live Data */
-    .live-section { padding: 14px; border-bottom: 1px solid var(--border-dim); }
-    .live-section:last-child { border-bottom: none; }
-
-    .live-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
-    .live-title {
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-2);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .live-title i { width: 14px; height: 14px; }
-    .live-refresh {
-      font-size: 12px;
-      color: var(--text-2);
-      font-family: var(--mono);
-    }
-
-    /* Network Info */
-    .network-info {
-      background: var(--bg);
-      border-radius: 10px;
-      padding: 12px;
-    }
-    .network-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 0;
-      font-size: 13px;
-    }
-    .network-row .label { color: var(--text-2); }
-    .network-row .value {
-      font-family: var(--mono);
-      color: var(--text);
-    }
-    .network-row .value.highlight { color: var(--arc); }
-
-    /* Recent Transactions */
-    .tx-list { display: flex; flex-direction: column; gap: 8px; }
-    .tx-item {
-      background: var(--bg);
-      border-radius: 8px;
-      padding: 10px 12px;
-    }
-    .tx-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 6px;
-    }
-    .tx-type {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text);
-    }
-    .tx-type i { width: 14px; height: 14px; color: var(--success); }
-    .tx-amount {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--success);
-      font-family: var(--mono);
-    }
-    .tx-hash {
-      font-size: 12px;
-      font-family: var(--mono);
-      color: var(--accent-2);
-      text-decoration: none;
-      display: block;
-    }
-    .tx-hash:hover { text-decoration: underline; }
-    .tx-time {
-      font-size: 12px;
-      color: var(--text-2);
-      margin-top: 6px;
-    }
-
-    /* Signature Proof */
-    .sig-box {
-      background: var(--bg);
-      border-radius: 8px;
-      padding: 12px;
-    }
-    .sig-label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      color: var(--text-2);
-      margin-bottom: 8px;
-    }
-    .sig-value {
-      font-family: var(--mono);
-      font-size: 12px;
-      color: var(--text);
-      word-break: break-all;
-      line-height: 1.5;
-    }
-    .sig-verified {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 10px;
-      padding: 5px 10px;
-      background: var(--success-dim);
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--success);
-    }
-    .sig-verified i { width: 12px; height: 12px; }
-
-    /* x402 Info */
-    .x402-box {
-      background: var(--bg);
-      border-radius: 8px;
-      padding: 12px;
-    }
-    .x402-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-    .x402-logo {
-      font-weight: 700;
-      font-size: 15px;
-      color: var(--accent-2);
-    }
-    .x402-version {
-      padding: 3px 8px;
-      background: var(--accent);
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 700;
-      color: white;
-    }
-    .x402-detail {
-      display: flex;
-      justify-content: space-between;
-      padding: 6px 0;
-      font-size: 13px;
-    }
-    .x402-detail .label { color: var(--text-2); }
-    .x402-detail .value { font-family: var(--mono); color: var(--text); }
-
-    /* Catalog Panel */
-    .catalog-layout {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      height: 100%;
-    }
-    .catalog-header {
-      padding: 14px 20px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border-dim);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .catalog-title { font-size: 18px; font-weight: 600; }
-    .catalog-filters { display: flex; gap: 10px; }
-    .filter-select {
-      padding: 10px 14px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--text);
-      font-size: 14px;
-      font-family: inherit;
-      cursor: pointer;
-    }
-    .filter-select:focus { outline: none; border-color: var(--accent); }
-
-    .catalog-stats {
-      padding: 12px 20px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border-dim);
-      display: flex;
-      gap: 24px;
-      font-size: 14px;
-    }
-    .cat-stat {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .cat-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 2px;
-    }
-    .cat-dot.demo { background: var(--arc); }
-
-    .products-grid {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px 20px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 12px;
-      align-content: start;
-    }
-
-    .product-tile {
-      background: var(--surface);
-      border: 1px solid var(--border-dim);
-      border-radius: 10px;
-      padding: 14px;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .product-tile:hover {
-      border-color: var(--border);
-      background: var(--surface-2);
-      transform: translateY(-2px);
-    }
-    .tile-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 12px;
-    }
-    .tile-icon {
-      width: 36px;
-      height: 36px;
-      background: var(--bg);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-3);
-    }
-    .tile-icon i { width: 18px; height: 18px; }
-    .tile-source {
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-    .tile-source.demo { background: var(--arc); color: white; }
-    .tile-name { font-size: 15px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
-    .tile-desc {
-      font-size: 13px;
-      color: var(--text-2);
-      margin-bottom: 14px;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .tile-bottom { display: flex; justify-content: space-between; align-items: center; }
-    .tile-price { font-size: 17px; font-weight: 700; color: var(--success); font-family: var(--mono); }
-    .tile-merchant { font-size: 12px; color: var(--text-2); }
-
-    /* Orders Panel */
-    .orders-layout {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      height: 100%;
-    }
-    .orders-header {
-      padding: 14px 20px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border-dim);
-    }
-    .orders-header h2 { font-size: 18px; font-weight: 600; }
-    .orders-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px 20px;
-    }
 
     /* Loading */
     .loading {
-      width: 16px;
-      height: 16px;
+      width: 20px;
+      height: 20px;
       border: 2px solid var(--border);
-      border-top-color: var(--accent);
+      border-top-color: white;
       border-radius: 50%;
       animation: spin 0.6s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
-
-    /* Responsive */
-    @media (max-width: 1200px) {
-      .dashboard { grid-template-columns: 280px 1fr; }
-      .col-right { display: none; }
+    /* History */
+    .history {
+      margin-top: 40px;
     }
-    @media (max-width: 900px) {
-      .dashboard { grid-template-columns: 1fr; }
-      .col-left { display: none; }
+    .history-title {
+      font-size: 14px;
+      color: var(--text-2);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--surface);
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+    .history-item i { width: 16px; height: 16px; color: var(--success); }
+    .history-name { flex: 1; }
+    .history-amount { font-weight: 600; color: var(--success); }
   </style>
 </head>
 <body>
-  <div class="app">
-    <header>
-      <div class="logo">
-        <div class="logo-icon"><i data-lucide="zap"></i></div>
-        Arc <span>Agentic Commerce</span>
+  <header>
+    <div class="logo">
+      <div class="logo-icon"><i data-lucide="bot"></i></div>
+      Arc Agent
+    </div>
+    <div class="balance">
+      <span class="balance-amount" id="balance">$0.0</span>
+      <span class="balance-label">USDC</span>
+    </div>
+  </header>
+
+  <main>
+    <h1>What do you want to buy?</h1>
+    <p class="subtitle">AI agent finds the best deal and pays with USDC</p>
+
+    <div class="search-box">
+      <input class="search-input" id="query" placeholder="e.g. Buy API credits under $5" />
+      <button class="search-btn" id="buy-btn">
+        <i data-lucide="sparkles"></i> Buy
+      </button>
+    </div>
+
+    <div class="quick-btns">
+      <button class="quick-btn" data-q="Buy cheapest hardware wallet">Hardware Wallet</button>
+      <button class="quick-btn" data-q="Buy OpenAI API credits under $5">API Credits</button>
+      <button class="quick-btn" data-q="Buy Solidity course">Dev Course</button>
+      <button class="quick-btn" data-q="Buy USB-C cable">USB Cable</button>
+    </div>
+
+    <div id="results">
+      <div class="empty">
+        <div class="empty-icon"><i data-lucide="shopping-bag"></i></div>
+        <p>Tell me what you need and I'll find it for you</p>
       </div>
-      <div class="header-center">
-        <button class="tab active" data-panel="shop"><i data-lucide="bot"></i> Agent</button>
-        <button class="tab" data-panel="catalog"><i data-lucide="grid-3x3"></i> Catalog</button>
-        <button class="tab" data-panel="orders"><i data-lucide="receipt"></i> Orders</button>
-      </div>
-      <div class="header-right">
-        <button class="connect-btn" id="connect-btn" onclick="connectWallet()">
-          <i data-lucide="wallet"></i> Connect
-        </button>
-        <div class="network-badge" id="network-badge">Arc Testnet</div>
-      </div>
-    </header>
+    </div>
 
-    <main>
-      <!-- Shop/Agent Panel -->
-      <div class="panel active" id="panel-shop">
-        <div class="dashboard">
-          <!-- Left Column: Agent Status -->
-          <div class="col col-left">
-            <div class="section">
-              <div class="section-title"><i data-lucide="bot"></i> Agent Identity</div>
-              <div class="agent-identity">
-                <div class="agent-row">
-                  <div class="agent-avatar"><i data-lucide="cpu"></i></div>
-                  <div>
-                    <div class="agent-name" id="agent-name">ArcTrustlessAgent</div>
-                    <div class="agent-address">
-                      <a id="agent-address-link" href="#" target="_blank">0x...</a>
-                    </div>
-                  </div>
-                </div>
-                <div class="policy-grid" style="margin-bottom: 12px;">
-                  <div class="policy-item">
-                    <span class="policy-name">Owner</span>
-                    <span class="policy-value" id="agent-owner" style="font-size: 11px;">System</span>
-                  </div>
-                  <div class="policy-item">
-                    <span class="policy-name">LLM</span>
-                    <span class="policy-value" style="color: var(--accent-2)">Groq</span>
-                  </div>
-                </div>
-                <div class="stats-grid">
-                  <div class="stat-box">
-                    <div class="stat-value accent" id="orders-count">0</div>
-                    <div class="stat-label">Orders</div>
-                  </div>
-                  <div class="stat-box">
-                    <div class="stat-value success" id="total-spent">$0.00</div>
-                    <div class="stat-label">Spent</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="section">
-              <div class="section-title"><i data-lucide="wallet"></i> Treasury</div>
-              <div class="treasury-box">
-                <div class="treasury-header">
-                  <div class="treasury-balance" id="treasury-balance">$0.00</div>
-                  <div class="treasury-badge">USDC</div>
-                </div>
-                <div class="wallet-address">
-                  <a href="#" id="wallet-link" target="_blank" class="wallet-addr-link">
-                    <span id="wallet-address">Loading...</span>
-                    <i data-lucide="external-link" style="width:12px;height:12px;margin-left:4px;opacity:0.6"></i>
-                  </a>
-                </div>
-                <div class="treasury-tiers">
-                  <div class="tier hot">
-                    <div class="tier-name">Hot</div>
-                    <div class="tier-value" id="tier-hot">$0</div>
-                  </div>
-                  <div class="tier warm">
-                    <div class="tier-name">Warm</div>
-                    <div class="tier-value" id="tier-warm">$0</div>
-                  </div>
-                  <div class="tier cold">
-                    <div class="tier-name">Cold</div>
-                    <div class="tier-value" id="tier-cold">$0</div>
-                  </div>
-                </div>
-                <a href="https://faucet.circle.com" target="_blank" class="faucet-btn" id="faucet-btn">
-                  <i data-lucide="droplets"></i> Get Test USDC
-                </a>
-              </div>
-            </div>
-
-            <div class="section">
-              <div class="section-title"><i data-lucide="shield-check"></i> Guardrails</div>
-              <div class="policy-grid">
-                <div class="policy-item">
-                  <span class="policy-name">Max Tx</span>
-                  <span class="policy-value" id="policy-single">$10</span>
-                </div>
-                <div class="policy-item">
-                  <span class="policy-name">Daily</span>
-                  <span class="policy-value" id="policy-daily">$100</span>
-                </div>
-                <div class="policy-item">
-                  <span class="policy-name">Categories</span>
-                  <span class="policy-value" style="color: var(--accent-2)">All</span>
-                </div>
-                <div class="policy-item">
-                  <span class="policy-name">Merchants</span>
-                  <span class="policy-value" style="color: var(--accent-2)">Verified</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="section">
-              <div class="section-title"><i data-lucide="credit-card"></i> Payments</div>
-              <div class="int-grid" id="integrations-list">
-                <div class="int-item"><span class="int-name">Loading...</span></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Center: Commerce -->
-          <div class="col commerce-area">
-            <div class="query-section">
-              <h1 class="query-title">Agent Commerce</h1>
-              <p class="query-sub">Agent searches, compares, and purchases with USDC on-chain.</p>
-              <div class="query-row">
-                <input class="query-input" id="shop-query" placeholder="e.g., Buy cheapest hardware wallet" />
-                <button class="query-btn" id="shop-btn">
-                  <i data-lucide="sparkles"></i> Execute
-                </button>
-              </div>
-              <div class="quick-tags">
-                <span class="quick-tag" data-q="Buy cheapest hardware wallet under $10">Hardware Wallet</span>
-                <span class="quick-tag" data-q="Buy OpenAI API credits under $5">API Credits</span>
-                <span class="quick-tag" data-q="Buy Solidity course under $10">Dev Course</span>
-                <span class="quick-tag" data-q="Buy cheapest USB-C cable">USB-C Cable</span>
-              </div>
-            </div>
-            <div class="results-area" id="shop-results">
-              <div class="empty-state">
-                <div class="empty-icon"><i data-lucide="bot"></i></div>
-                <h3 class="empty-title">Ready</h3>
-                <p class="empty-sub">Enter a shopping query above.</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Right Column: Live Data -->
-          <div class="col col-right">
-            <div class="live-section">
-              <div class="live-header">
-                <div class="live-title"><i data-lucide="credit-card"></i> Payment</div>
-              </div>
-              <div class="x402-box">
-                <div class="x402-header">
-                  <span class="x402-logo">x402</span>
-                  <span class="x402-version">V2</span>
-                  <span style="margin-left: auto; color: var(--success); font-size: 12px;">On-chain USDC</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="live-section">
-              <div class="live-header">
-                <div class="live-title"><i data-lucide="activity"></i> Recent Transactions</div>
-              </div>
-              <div class="tx-list" id="tx-list">
-                <div class="tx-item" style="text-align: center; color: var(--text-3); font-size: 11px;">
-                  No transactions yet
-                </div>
-              </div>
-            </div>
-
-            <div class="live-section">
-              <div class="live-header">
-                <div class="live-title"><i data-lucide="key"></i> Last Signature</div>
-              </div>
-              <div class="sig-box" id="sig-box">
-                <div class="sig-label">EIP-712 Signature</div>
-                <div class="sig-value" id="sig-value">No signatures yet</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Catalog Panel -->
-      <div class="panel" id="panel-catalog">
-        <div class="catalog-layout">
-          <div class="catalog-header">
-            <h2 class="catalog-title">Product Catalog</h2>
-            <div class="catalog-filters">
-              <select class="filter-select" id="category-filter">
-                <option value="">All Categories</option>
-              </select>
-            </div>
-          </div>
-          <div class="catalog-stats" id="catalog-stats">
-            <span style="color: var(--text-3)">Loading products...</span>
-          </div>
-          <div class="products-grid" id="products-grid">
-            <div class="empty-state" style="grid-column: 1/-1;">
-              <div class="empty-icon"><i data-lucide="package-open"></i></div>
-              <h3 class="empty-title">Loading...</h3>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Orders Panel -->
-      <div class="panel" id="panel-orders">
-        <div class="orders-layout">
-          <div class="orders-header"><h2>Order History</h2></div>
-          <div class="orders-content" id="orders-list">
-            <div class="empty-state">
-              <div class="empty-icon"><i data-lucide="receipt"></i></div>
-              <h3 class="empty-title">No orders yet</h3>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-  </div>
+    <div class="history" id="history" style="display: none;">
+      <div class="history-title">Recent Purchases</div>
+      <div id="history-list"></div>
+    </div>
+  </main>
 
   <script>
     const API = '/api';
     const EXPLORER = 'https://testnet.arcscan.app';
-
     lucide.createIcons();
 
-    // State
-    let agentState = {};
-    let recentTxs = [];
-    let lastSignature = null;
-    let userWallet = null;
+    // Quick buttons
+    document.querySelectorAll('.quick-btn').forEach(btn => {
+      btn.onclick = () => document.getElementById('query').value = btn.dataset.q;
+    });
 
-    // Wallet Connection
-    async function connectWallet() {
-      const btn = document.getElementById('connect-btn');
-      if (!window.ethereum) {
-        alert('Install MetaMask to connect');
-        return;
-      }
+    // Load balance
+    async function loadBalance() {
       try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        userWallet = accounts[0];
-        btn.innerHTML = `<i data-lucide="wallet"></i> ${userWallet.slice(0,6)}...${userWallet.slice(-4)}`;
-        btn.classList.add('connected');
-        document.getElementById('agent-owner').textContent = userWallet.slice(0,6) + '...' + userWallet.slice(-4);
-        lucide.createIcons();
-        // Switch to Arc Testnet
-        try {
-          await window.ethereum.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: '0x4CEA32' }], // 5042002 in hex
-          });
-        } catch (e) {
-          if (e.code === 4902) {
-            await window.ethereum.request({
-              method: 'wallet_addEthereumChain',
-              params: [{
-                chainId: '0x4CEA32',
-                chainName: 'Arc Testnet',
-                nativeCurrency: { name: 'USDC', symbol: 'USDC', decimals: 18 },
-                rpcUrls: ['https://rpc.testnet.arc.network'],
-                blockExplorerUrls: ['https://testnet.arcscan.app']
-              }]
-            });
-          }
-        }
-      } catch (e) {
-        console.error('Connect error:', e);
-      }
+        const res = await fetch(API + '/faucet/status');
+        const data = await res.json();
+        const bal = parseFloat((data.balanceUsd || '$0').replace('$', ''));
+        document.getElementById('balance').textContent = '$' + bal.toFixed(1);
+      } catch (e) {}
     }
 
-    // Navigation
-    document.querySelectorAll('.tab').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('panel-' + btn.dataset.panel).classList.add('active');
-        if (btn.dataset.panel === 'catalog') loadProducts();
-        if (btn.dataset.panel === 'orders') loadOrders();
-      });
-    });
-
-    // Quick tags
-    document.querySelectorAll('.quick-tag').forEach(tag => {
-      tag.addEventListener('click', () => {
-        document.getElementById('shop-query').value = tag.dataset.q;
-      });
-    });
-
-    // Format helpers
-    const short = (s, n = 6) => s ? `${s.slice(0, n)}...${s.slice(-4)}` : '...';
-    const formatMoney = (n) => {
-      if (!n) return '$0.0';
-      const num = parseFloat(String(n).replace('$', ''));
-      return isNaN(num) ? '$0.0' : '$' + num.toFixed(1);
-    };
-
-    // Load agent status
-    async function loadStatus() {
+    // Load history
+    async function loadHistory() {
       try {
-        const [statusRes, ordersRes, sourcesRes, treasuryRes, faucetRes] = await Promise.all([
-          fetch(API + '/status'),
-          fetch(API + '/shop/orders'),
-          fetch(API + '/aggregate/sources'),
-          fetch(API + '/treasury').catch(() => ({ json: () => ({}) })),
-          fetch(API + '/faucet/status').catch(() => ({ json: () => ({}) }))
-        ]);
-
-        const status = await statusRes.json();
-        const orders = await ordersRes.json();
-        const sources = await sourcesRes.json();
-        const treasury = await treasuryRes.json().catch(() => ({}));
-        const faucet = await faucetRes.json().catch(() => ({}));
-
-        agentState = status;
-
-        // Agent identity
-        const addr = status.identity?.address || '0x...';
-        document.getElementById('agent-name').textContent = status.identity?.name || 'ArcTrustlessAgent';
-        document.getElementById('agent-address-link').textContent = short(addr);
-        document.getElementById('agent-address-link').href = `${EXPLORER}/address/${addr}`;
-
-        // Stats
-        document.getElementById('orders-count').textContent = orders.total || 0;
-        const spent = orders.orders?.reduce((s, o) => s + parseFloat(o.totalAmount?.replace('$', '') || 0), 0) || 0;
-        document.getElementById('total-spent').textContent = formatMoney(spent);
-
-        // Treasury - use real balance from faucet endpoint
-        const realBalance = faucet.balance || treasury.balance || status.treasury?.hotWallet?.balance || '0';
-        const bal = formatMoney(parseFloat((faucet.balanceUsd || '0').replace('$', '')) || realBalance);
-        document.getElementById('treasury-balance').textContent = bal;
-        document.getElementById('tier-hot').textContent = bal;
-        document.getElementById('tier-warm').textContent = formatMoney(treasury.warmBalance || 0);
-        document.getElementById('tier-cold').textContent = formatMoney(treasury.coldBalance || 0);
-
-        // Wallet address and faucet
-        if (faucet.address) {
-          const shortAddr = short(faucet.address, 8);
-          document.getElementById('wallet-address').textContent = shortAddr;
-          document.getElementById('wallet-link').href = faucet.explorerUrl || `${EXPLORER}/address/${faucet.address}`;
-
-          // Update faucet button based on balance
-          const faucetBtn = document.getElementById('faucet-btn');
-          if (faucet.needsFunding) {
-            faucetBtn.innerHTML = '<i data-lucide="droplets"></i> Get Test USDC';
-            faucetBtn.classList.remove('funded');
-          } else {
-            faucetBtn.innerHTML = '<i data-lucide="check-circle"></i> Wallet Funded';
-            faucetBtn.classList.add('funded');
-          }
+        const res = await fetch(API + '/shop/orders');
+        const { orders } = await res.json();
+        if (orders?.length) {
+          document.getElementById('history').style.display = 'block';
+          document.getElementById('history-list').innerHTML = orders.slice(-5).reverse().map(o => `
+            <div class="history-item">
+              <i data-lucide="check-circle"></i>
+              <span class="history-name">${o.product?.name || 'Product'}</span>
+              <span class="history-amount">${o.totalAmount}</span>
+            </div>
+          `).join('');
           lucide.createIcons();
         }
-
-        // Policy
-        const policy = status.policy || {};
-        document.getElementById('policy-single').textContent = policy.spending?.maxSinglePayment || '$10';
-        document.getElementById('policy-daily').textContent = policy.spending?.dailyLimit || '$100';
-
-        // Integrations - show only active ones
-        document.getElementById('integrations-list').innerHTML = `
-          <div class="int-item">
-            <span class="int-name">x402 Protocol</span>
-            <span class="int-status live">Live</span>
-          </div>
-          <div class="int-item">
-            <span class="int-name">Circle USDC</span>
-            <span class="int-status live">Live</span>
-          </div>
-        `;
-
-        // Recent transactions from treasury
-        if (treasury.spendingHistory?.length) {
-          recentTxs = treasury.spendingHistory.slice(0, 5);
-          renderTxList();
-        }
-
-      } catch (e) {
-        console.error('Status load error:', e);
-      }
+      } catch (e) {}
     }
 
-    function renderTxList() {
-      const container = document.getElementById('tx-list');
-      if (!recentTxs.length) {
-        container.innerHTML = '<div class="tx-item" style="text-align: center; color: var(--text-3); font-size: 11px;">No transactions yet</div>';
-        return;
-      }
-      container.innerHTML = recentTxs.map(tx => `
-        <div class="tx-item">
-          <div class="tx-top">
-            <div class="tx-type"><i data-lucide="check-circle"></i> ${tx.purpose || 'Payment'}</div>
-            <div class="tx-amount">${formatMoney(tx.amount)}</div>
-          </div>
-          ${tx.txHash ? `<a class="tx-hash" href="${EXPLORER}/tx/${tx.txHash}" target="_blank">${short(tx.txHash, 10)}</a>` : ''}
-          <div class="tx-time">${new Date(tx.timestamp).toLocaleString()}</div>
-        </div>
-      `).join('');
-      lucide.createIcons();
-    }
-
-    // Shop function
-    async function shop() {
-      const query = document.getElementById('shop-query').value;
-      const btn = document.getElementById('shop-btn');
-      const results = document.getElementById('shop-results');
+    // Buy
+    async function buy() {
+      const query = document.getElementById('query').value;
+      const btn = document.getElementById('buy-btn');
+      const results = document.getElementById('results');
       if (!query) return;
 
       btn.disabled = true;
       btn.innerHTML = '<span class="loading"></span>';
-      results.innerHTML = '<div class="empty-state"><span class="loading"></span><p class="empty-sub" style="margin-top: 12px;">Agent processing...</p></div>';
+      results.innerHTML = '<div class="empty"><span class="loading"></span><p style="margin-top:12px">Finding best option...</p></div>';
 
       try {
         const res = await fetch(API + '/shop/buy', {
@@ -1433,262 +383,70 @@
         });
         const data = await res.json();
 
-        const isSuccess = data.success;
-        const icon = isSuccess ? 'check-circle' : 'x-circle';
-        const title = isSuccess ? 'Purchase Complete' : 'Purchase Failed';
-
-        let html = `
-          <div class="result-card ${isSuccess ? 'success' : 'error'}">
-            <div class="result-header">
-              <div class="result-title ${isSuccess ? 'success' : 'error'}">
-                <i data-lucide="${icon}"></i> ${title}
-              </div>
-              <div class="result-meta">
-                <span class="result-badge">${data.duration || 0}ms</span>
-              </div>
-            </div>
-            <div class="result-body">
-        `;
-
-        // Thinking steps
-        if (data.thinking?.length) {
-          html += '<div class="thinking-steps"><div class="thinking-label">Agent Reasoning</div>';
-          data.thinking.forEach(t => {
-            html += `
-              <div class="thinking-step">
-                <div class="step-num">${t.step}</div>
-                <div class="step-content">
-                  <div class="step-title">${t.thought}</div>
-                  <div class="step-desc">${t.reasoning}</div>
-                </div>
-              </div>
-            `;
-          });
-          html += '</div>';
-        }
-
-        // Product
-        if (data.selectedProduct) {
+        if (data.success && data.selectedProduct) {
           const p = data.selectedProduct;
-          html += `
-            <div class="product-card">
-              <div class="product-icon"><i data-lucide="${getIcon(p.category)}"></i></div>
-              <div class="product-info">
-                <div class="product-name">${p.name}</div>
-                <div class="product-desc">${p.description || ''}</div>
-                <div class="product-footer">
-                  <span class="product-price">${p.price}</span>
-                  <span class="product-source demo">${p.merchant}</span>
+          const o = data.order || {};
+          results.innerHTML = `
+            <div class="result">
+              <div class="result-header">
+                <div class="result-icon"><i data-lucide="check"></i></div>
+                <span class="result-title">Purchase Complete</span>
+                <span class="result-status">Confirmed</span>
+              </div>
+              <div class="product">
+                <div class="product-icon"><i data-lucide="${getIcon(p.category)}"></i></div>
+                <div class="product-info">
+                  <div class="product-name">${p.name}</div>
+                  <div class="product-desc">${p.description || ''}</div>
                 </div>
-              </div>
-            </div>
-          `;
-        }
-
-        // Order
-        if (data.order) {
-          html += `
-            <div class="order-summary">
-              <div class="order-row">
-                <span class="label">Order ID</span>
-                <span class="value" style="font-family: var(--mono); font-size: 11px;">${data.order.id}</span>
+                <div class="product-price">${p.price}</div>
               </div>
               <div class="order-row">
-                <span class="label">Payment Method</span>
-                <span class="value">${formatPayment(data.order.paymentMethod)}</span>
+                <span class="order-label">Status</span>
+                <span class="order-value success">Paid</span>
               </div>
+              ${o.txHash ? `
               <div class="order-row">
-                <span class="label">Status</span>
-                <span class="value ${data.order.paymentStatus === 'confirmed' ? 'success' : ''}">${data.order.paymentStatus}</span>
-              </div>
-              ${data.order.txHash ? `
-              <div class="order-row">
-                <span class="label">Transaction</span>
-                <a class="tx-link" href="${EXPLORER}/tx/${data.order.txHash}" target="_blank">${short(data.order.txHash, 12)}</a>
+                <span class="order-label">Transaction</span>
+                <span class="order-value"><a href="${EXPLORER}/tx/${o.txHash}" target="_blank">${o.txHash.slice(0,10)}...${o.txHash.slice(-6)}</a></span>
               </div>
               ` : ''}
-              <div class="order-row total">
-                <span class="label">Total</span>
-                <span class="value success">${data.order.totalAmount}</span>
-              </div>
             </div>
           `;
-
-          // Update signature display
-          if (data.order.txHash) {
-            lastSignature = data.order.txHash;
-            document.getElementById('sig-value').textContent = data.order.txHash;
-            const sigBox = document.getElementById('sig-box');
-            if (!sigBox.querySelector('.sig-verified')) {
-              sigBox.innerHTML += '<div class="sig-verified"><i data-lucide="shield-check"></i> EIP-712 Verified</div>';
-            }
-
-            // Add to recent txs
-            recentTxs.unshift({
-              purpose: data.selectedProduct?.name || 'Purchase',
-              amount: data.order.totalAmount?.replace('$', ''),
-              txHash: data.order.txHash,
-              timestamp: Date.now()
-            });
-            recentTxs = recentTxs.slice(0, 5);
-            renderTxList();
-          }
+          loadBalance();
+          loadHistory();
+        } else {
+          results.innerHTML = `
+            <div class="result">
+              <div class="result-header">
+                <div class="result-icon" style="background: #ef4444;"><i data-lucide="x"></i></div>
+                <span class="result-title">Could not complete</span>
+                <span class="result-status error">Failed</span>
+              </div>
+              <p style="color: var(--text-2); padding: 16px 0;">${data.message || 'No matching products found'}</p>
+            </div>
+          `;
         }
-
-        if (data.message) {
-          html += `<p style="margin-top: 16px; color: var(--text-3); font-size: 12px;">${data.message}</p>`;
-        }
-
-        html += '</div></div>';
-        results.innerHTML = html;
         lucide.createIcons();
-        loadStatus();
       } catch (e) {
-        results.innerHTML = `<div class="result-card error"><div class="result-body"><p style="color: var(--error);">Error: ${e.message}</p></div></div>`;
+        results.innerHTML = `<div class="result"><p style="color: #ef4444;">Error: ${e.message}</p></div>`;
       } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i data-lucide="sparkles"></i> Execute';
+        btn.innerHTML = '<i data-lucide="sparkles"></i> Buy';
         lucide.createIcons();
       }
-    }
-
-    function formatPayment(m) {
-      const labels = { circle: 'Circle USDC', x402: 'x402 Protocol', coinbase_commerce: 'Coinbase Commerce' };
-      return labels[m] || m;
     }
 
     function getIcon(cat) {
-      const icons = {
-        hardware: 'hard-drive', security: 'shield', software: 'code', 'api-credits': 'zap',
-        courses: 'graduation-cap', books: 'book-open', apparel: 'shirt', general: 'package'
-      };
+      const icons = { hardware: 'hard-drive', 'api-credits': 'zap', courses: 'graduation-cap', cables: 'cable', books: 'book-open' };
       return icons[cat] || 'package';
     }
 
-    // Products
-    let allProducts = [];
+    document.getElementById('query').onkeypress = e => { if (e.key === 'Enter') buy(); };
+    document.getElementById('buy-btn').onclick = buy;
 
-    async function loadProducts() {
-      const grid = document.getElementById('products-grid');
-      const stats = document.getElementById('catalog-stats');
-      const catFilter = document.getElementById('category-filter');
-
-      try {
-        const res = await fetch(API + '/aggregate/products');
-        const data = await res.json();
-        allProducts = data.products || [];
-
-        if (allProducts.length === 0) {
-          grid.innerHTML = `
-            <div class="empty-state" style="grid-column: 1/-1;">
-              <div class="empty-icon"><i data-lucide="package-open"></i></div>
-              <h3 class="empty-title">No products</h3>
-            </div>
-          `;
-          stats.innerHTML = '';
-          lucide.createIcons();
-          return;
-        }
-
-        // Categories
-        const categories = [...new Set(allProducts.map(p => p.category).filter(Boolean))];
-        catFilter.innerHTML = '<option value="">All Categories</option>' + categories.map(c => `<option value="${c}">${c}</option>`).join('');
-
-        // Stats
-        stats.innerHTML = `<span>${allProducts.length} products available</span>`;
-
-        renderProducts(allProducts);
-
-        catFilter.onchange = () => {
-          const cat = catFilter.value;
-          renderProducts(cat ? allProducts.filter(p => p.category === cat) : allProducts);
-        };
-      } catch (e) {
-        console.error('Products error:', e);
-      }
-    }
-
-    function renderProducts(products) {
-      const grid = document.getElementById('products-grid');
-      if (products.length === 0) {
-        grid.innerHTML = `
-          <div class="empty-state" style="grid-column: 1/-1;">
-            <div class="empty-icon"><i data-lucide="search-x"></i></div>
-            <h3 class="empty-title">No matches</h3>
-          </div>
-        `;
-        lucide.createIcons();
-        return;
-      }
-      grid.innerHTML = products.map(p => `
-        <div class="product-tile" onclick="quickBuy('${p.name.replace(/'/g, "\\'")}')">
-          <div class="tile-top">
-            <div class="tile-icon"><i data-lucide="${getIcon(p.category)}"></i></div>
-            <span class="tile-source demo">${p.category}</span>
-          </div>
-          <div class="tile-name">${p.name}</div>
-          <div class="tile-desc">${p.description || ''}</div>
-          <div class="tile-bottom">
-            <span class="tile-price">${p.price}</span>
-            <span class="tile-merchant">${p.merchant}</span>
-          </div>
-        </div>
-      `).join('');
-      lucide.createIcons();
-    }
-
-    function quickBuy(name) {
-      document.getElementById('shop-query').value = 'Buy ' + name;
-      document.querySelector('[data-panel="shop"]').click();
-    }
-
-    // Orders
-    async function loadOrders() {
-      const container = document.getElementById('orders-list');
-      try {
-        const res = await fetch(API + '/shop/orders');
-        const { orders } = await res.json();
-        if (!orders?.length) {
-          container.innerHTML = `
-            <div class="empty-state">
-              <div class="empty-icon"><i data-lucide="receipt"></i></div>
-              <h3 class="empty-title">No orders yet</h3>
-            </div>
-          `;
-          lucide.createIcons();
-          return;
-        }
-        container.innerHTML = orders.reverse().map(o => `
-          <div class="result-card" style="margin-bottom: 12px;">
-            <div class="result-header">
-              <div class="result-title"><i data-lucide="package"></i> ${o.product?.name || 'Product'}</div>
-              <span class="result-badge">${o.paymentStatus}</span>
-            </div>
-            <div class="result-body">
-              <div class="order-summary" style="margin: 0;">
-                <div class="order-row"><span class="label">Order ID</span><span class="value" style="font-family: var(--mono); font-size: 10px;">${o.id}</span></div>
-                <div class="order-row"><span class="label">Amount</span><span class="value success">${o.totalAmount}</span></div>
-                ${o.txHash ? `<div class="order-row"><span class="label">Transaction</span><a class="tx-link" href="${EXPLORER}/tx/${o.txHash}" target="_blank">${short(o.txHash, 12)}</a></div>` : ''}
-                <div class="order-row"><span class="label">Date</span><span class="value">${new Date(o.createdAt).toLocaleString()}</span></div>
-              </div>
-            </div>
-          </div>
-        `).join('');
-        lucide.createIcons();
-      } catch (e) {
-        console.error('Orders error:', e);
-      }
-    }
-
-    // Events
-    document.getElementById('shop-query').addEventListener('keypress', e => { if (e.key === 'Enter') shop(); });
-    document.getElementById('shop-btn').addEventListener('click', shop);
-
-    // Init
-    loadStatus();
-
-    // Auto-refresh every 30s
-    setInterval(loadStatus, 30000);
+    loadBalance();
+    loadHistory();
   </script>
 </body>
 </html>
