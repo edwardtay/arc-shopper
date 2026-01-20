@@ -1,4 +1,4 @@
-# ArcBot
+# ArcShopper
 
 Trustless AI Agent for autonomous shopping with on-chain USDC payments.
 
