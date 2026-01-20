@@ -464,6 +464,8 @@
     let walletConnected = false;
     let userAddress = null;
     let agentAddress = null;
+    let walletId = null; // Circle wallet ID
+    let useCircle = false; // Whether using Circle wallets
     lucide.createIcons();
 
     // Connect Wallet
@@ -506,9 +508,39 @@
       }
     }
 
-    // Register user's unique agent
+    // Register user's unique agent (tries Circle first, falls back to derived)
     async function registerAgent() {
       if (!userAddress) return;
+
+      // Check if Circle is configured
+      try {
+        const configRes = await fetch(API + '/circle/configured');
+        const configData = await configRes.json();
+
+        if (configData.configured) {
+          // Use Circle Developer-Controlled Wallet
+          const res = await fetch(API + '/circle/wallet', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: userAddress })
+          });
+          const data = await res.json();
+          if (data.success) {
+            agentAddress = data.walletAddress;
+            walletId = data.walletId;
+            useCircle = true;
+            updateAgentUI({
+              agentAddress: data.walletAddress,
+              balance: '$' + parseFloat(data.balance?.usdc || '0').toFixed(1),
+            });
+            return;
+          }
+        }
+      } catch (e) {
+        console.log('Circle not available, using derived wallet');
+      }
+
+      // Fall back to derived wallet
       try {
         const res = await fetch(API + '/agent/register', {
           method: 'POST',
@@ -633,18 +665,32 @@
     async function loadBalance() {
       if (!userAddress) return;
       try {
-        const res = await fetch(API + '/agent/status/' + userAddress);
-        const data = await res.json();
+        let balanceUsd = '$0.0';
 
-        if (data.address) {
-          agentAddress = data.address;
+        if (useCircle && walletId) {
+          // Load Circle wallet balance
+          const res = await fetch(API + '/circle/balance/' + walletId);
+          const data = await res.json();
+          balanceUsd = '$' + parseFloat(data.usdc || '0').toFixed(1);
+        } else {
+          // Load derived wallet balance
+          const res = await fetch(API + '/agent/status/' + userAddress);
+          const data = await res.json();
+          if (data.address) {
+            agentAddress = data.address;
+          }
+          balanceUsd = data.balanceUsd || '$0.0';
+        }
+
+        // Update UI
+        if (agentAddress) {
           const shortAgent = agentAddress.slice(0, 6) + '...' + agentAddress.slice(-4);
           const agentEl = document.getElementById('agent-address');
           if (agentEl) agentEl.innerHTML = shortAgent + ' <i data-lucide="copy" style="width:12px;height:12px;"></i>';
         }
 
         const balEl = document.getElementById('agent-balance');
-        if (balEl) balEl.textContent = data.balanceUsd || '$0.0';
+        if (balEl) balEl.textContent = balanceUsd;
 
         lucide.createIcons();
       } catch (e) {}

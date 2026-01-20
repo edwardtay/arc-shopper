@@ -18,6 +18,7 @@ import { getHelioClient } from '../commerce/helio';
 import { getWalletStatus, getFundingInstructions, canAffordTransaction, FAUCET_URL } from '../faucet';
 import { getFacilitator, VerifyRequest, SettleRequest } from '../facilitator';
 import { getOrCreateUserAgent, getAgentBalance, getAgentWallet } from '../agent/user-agents';
+import * as circleWallets from '../wallet/circle-wallets';
 
 // Validation middleware helper
 const validate = (req: Request, res: Response, next: NextFunction) => {
@@ -256,6 +257,89 @@ export function createServer() {
       res.status(500).json({ error: 'Failed to get agent status' });
     }
   });
+
+  // ==================== CIRCLE DEVELOPER-CONTROLLED WALLETS ====================
+
+  // Check if Circle is configured
+  app.get('/api/circle/configured', (_, res) => {
+    res.json({ configured: circleWallets.isCircleConfigured() });
+  });
+
+  // Create or get Circle wallet for user
+  app.post('/api/circle/wallet',
+    body('userId').isString().notEmpty(),
+    validate,
+    async (req: Request, res: Response) => {
+      const { userId } = req.body;
+
+      try {
+        const wallet = await circleWallets.getOrCreateUserWallet(userId);
+        const balance = await circleWallets.getWalletBalance(wallet.walletId);
+
+        res.json({
+          success: true,
+          isNew: wallet.isNew,
+          walletId: wallet.walletId,
+          walletAddress: wallet.walletAddress,
+          balance: {
+            native: balance.native,
+            usdc: balance.usdc,
+          },
+        });
+      } catch (error: any) {
+        console.error('Circle wallet error:', error);
+        res.status(500).json({ error: error.message || 'Failed to create Circle wallet' });
+      }
+    }
+  );
+
+  // Get user's Circle wallet status
+  app.get('/api/circle/wallet/:userId', async (req: Request, res: Response) => {
+    const userId = req.params.userId as string;
+
+    try {
+      const status = await circleWallets.getUserWalletStatus(userId);
+      res.json(status);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message || 'Failed to get wallet status' });
+    }
+  });
+
+  // Get wallet balance
+  app.get('/api/circle/balance/:walletId', async (req: Request, res: Response) => {
+    const walletId = req.params.walletId as string;
+
+    try {
+      const balance = await circleWallets.getWalletBalance(walletId);
+      res.json(balance);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message || 'Failed to get balance' });
+    }
+  });
+
+  // Execute transfer (server-controlled, no PIN needed)
+  app.post('/api/circle/transfer',
+    body('walletId').isString().notEmpty(),
+    body('destinationAddress').isString().notEmpty(),
+    body('amount').isString().notEmpty(),
+    validate,
+    async (req: Request, res: Response) => {
+      const { walletId, destinationAddress, amount, tokenAddress } = req.body;
+
+      try {
+        const result = await circleWallets.transferTokens(
+          walletId,
+          destinationAddress,
+          amount,
+          tokenAddress
+        );
+
+        res.json(result);
+      } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message || 'Transfer failed' });
+      }
+    }
+  );
 
   // Policy management
   app.get('/api/policy', (_, res) => {
