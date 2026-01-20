@@ -98,6 +98,86 @@
       background: var(--surface);
       padding: 8px 12px;
       border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .wallet-address:hover { background: var(--border); }
+    .wallet-address i { width: 14px; height: 14px; }
+    .disconnect-btn {
+      background: none;
+      border: none;
+      color: var(--text-2);
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 6px;
+    }
+    .disconnect-btn:hover { background: var(--surface); color: #ef4444; }
+    .disconnect-btn i { width: 16px; height: 16px; }
+    .agent-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    .agent-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .agent-label {
+      font-size: 12px;
+      color: var(--text-2);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .agent-address {
+      font-size: 13px;
+      color: var(--text);
+      font-family: monospace;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .agent-address:hover { color: var(--accent); }
+    .agent-balance {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .agent-balance-amount {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--success);
+    }
+    .fund-btn {
+      padding: 8px 16px;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .fund-btn:hover { opacity: 0.9; }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      z-index: 1000;
     }
 
     /* Main */
@@ -324,6 +404,24 @@
   </header>
 
   <main>
+    <div id="agent-card" style="display: none;">
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <span class="agent-label">Your Shopping Agent</span>
+          <span class="agent-address" onclick="copyAgentAddress()" id="agent-address">Loading...</span>
+        </div>
+        <div class="agent-balance">
+          <div>
+            <span class="agent-balance-amount" id="agent-balance">$0.0</span>
+            <span style="color: var(--text-2); font-size: 13px; margin-left: 4px;">USDC</span>
+          </div>
+          <button class="fund-btn" onclick="showFundInfo()">
+            <i data-lucide="plus" style="width:14px;height:14px;display:inline;vertical-align:middle;margin-right:4px;"></i>Fund Agent
+          </button>
+        </div>
+      </div>
+    </div>
+
     <h1>What do you want to buy?</h1>
     <p class="subtitle">AI agent finds the best deal and pays with USDC</p>
 
@@ -360,6 +458,7 @@
     const ARC_CHAIN_ID = '0x4CF552'; // 5042002 in hex
     let walletConnected = false;
     let userAddress = null;
+    let agentAddress = null;
     lucide.createIcons();
 
     // Connect Wallet
@@ -408,13 +507,55 @@
         const short = userAddress.slice(0, 6) + '...' + userAddress.slice(-4);
         section.innerHTML = `
           <div class="wallet-info">
-            <span class="wallet-address">${short}</span>
-            <div class="balance">
-              <span class="balance-amount" id="balance">$0.0</span>
-              <span class="balance-label">USDC</span>
-            </div>
+            <span class="wallet-address" onclick="copyUserAddress()" title="Click to copy">
+              ${short} <i data-lucide="copy"></i>
+            </span>
+            <button class="disconnect-btn" onclick="disconnectWallet()" title="Disconnect">
+              <i data-lucide="log-out"></i>
+            </button>
           </div>
         `;
+        lucide.createIcons();
+        document.getElementById('agent-card').style.display = 'block';
+      }
+    }
+
+    function copyUserAddress() {
+      navigator.clipboard.writeText(userAddress);
+      showToast('Wallet address copied!');
+    }
+
+    function copyAgentAddress() {
+      if (agentAddress) {
+        navigator.clipboard.writeText(agentAddress);
+        showToast('Agent address copied!');
+      }
+    }
+
+    function disconnectWallet() {
+      walletConnected = false;
+      userAddress = null;
+      const section = document.getElementById('wallet-section');
+      section.innerHTML = `
+        <button class="connect-btn" onclick="connectWallet()">
+          <i data-lucide="wallet"></i> Connect Wallet
+        </button>
+      `;
+      document.getElementById('agent-card').style.display = 'none';
+      lucide.createIcons();
+    }
+
+    function showToast(msg) {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
+    }
+
+    function showFundInfo() {
+      if (agentAddress) {
+        alert('Send USDC on Arc Testnet to your agent:\\n\\n' + agentAddress + '\\n\\nGet testnet USDC from: https://faucet.circle.com');
       }
     }
 
@@ -423,14 +564,26 @@
       btn.onclick = () => document.getElementById('query').value = btn.dataset.q;
     });
 
-    // Load balance
+    // Load agent info and balance
     async function loadBalance() {
       try {
         const res = await fetch(API + '/faucet/status');
         const data = await res.json();
+
+        // Set agent address
+        if (data.address) {
+          agentAddress = data.address;
+          const shortAgent = agentAddress.slice(0, 6) + '...' + agentAddress.slice(-4);
+          const agentEl = document.getElementById('agent-address');
+          if (agentEl) agentEl.innerHTML = shortAgent + ' <i data-lucide="copy" style="width:12px;height:12px;"></i>';
+        }
+
+        // Set balance
         const bal = parseFloat((data.balanceUsd || '$0').replace('$', ''));
-        const balEl = document.getElementById('balance');
+        const balEl = document.getElementById('agent-balance');
         if (balEl) balEl.textContent = '$' + bal.toFixed(1);
+
+        lucide.createIcons();
       } catch (e) {}
     }
 
