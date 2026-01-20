@@ -71,6 +71,33 @@
       color: white;
       font-weight: 600;
     }
+    .connect-btn {
+      padding: 10px 20px;
+      background: var(--accent);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .connect-btn:hover { opacity: 0.9; }
+    .connect-btn i { width: 18px; height: 18px; }
+    .wallet-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .wallet-address {
+      font-size: 13px;
+      color: var(--text-2);
+      background: var(--surface);
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
 
     /* Main */
     main {
@@ -288,9 +315,10 @@
       <div class="logo-icon"><i data-lucide="bot"></i></div>
       ArcShopper
     </div>
-    <div class="balance">
-      <span class="balance-amount" id="balance">$0.0</span>
-      <span class="balance-label">USDC</span>
+    <div id="wallet-section">
+      <button class="connect-btn" id="connect-btn" onclick="connectWallet()">
+        <i data-lucide="wallet"></i> Connect Wallet
+      </button>
     </div>
   </header>
 
@@ -328,7 +356,66 @@
   <script>
     const API = '/api';
     const EXPLORER = 'https://testnet.arcscan.app';
+    const ARC_CHAIN_ID = '0x4CF552'; // 5042002 in hex
+    let walletConnected = false;
+    let userAddress = null;
     lucide.createIcons();
+
+    // Connect Wallet
+    async function connectWallet() {
+      if (!window.ethereum) {
+        alert('Please install MetaMask to connect your wallet');
+        return;
+      }
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        userAddress = accounts[0];
+        walletConnected = true;
+
+        // Switch to Arc Testnet
+        try {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: ARC_CHAIN_ID }],
+          });
+        } catch (switchError) {
+          if (switchError.code === 4902) {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: ARC_CHAIN_ID,
+                chainName: 'Arc Testnet',
+                nativeCurrency: { name: 'USDC', symbol: 'USDC', decimals: 18 },
+                rpcUrls: ['https://rpc.testnet.arc.network'],
+                blockExplorerUrls: ['https://testnet.arcscan.app']
+              }]
+            });
+          }
+        }
+
+        updateWalletUI();
+        loadBalance();
+        loadHistory();
+      } catch (e) {
+        console.error('Wallet connection failed:', e);
+      }
+    }
+
+    function updateWalletUI() {
+      const section = document.getElementById('wallet-section');
+      if (walletConnected && userAddress) {
+        const short = userAddress.slice(0, 6) + '...' + userAddress.slice(-4);
+        section.innerHTML = `
+          <div class="wallet-info">
+            <span class="wallet-address">${short}</span>
+            <div class="balance">
+              <span class="balance-amount" id="balance">$0.0</span>
+              <span class="balance-label">USDC</span>
+            </div>
+          </div>
+        `;
+      }
+    }
 
     // Quick buttons
     document.querySelectorAll('.quick-btn').forEach(btn => {
@@ -341,7 +428,8 @@
         const res = await fetch(API + '/faucet/status');
         const data = await res.json();
         const bal = parseFloat((data.balanceUsd || '$0').replace('$', ''));
-        document.getElementById('balance').textContent = '$' + bal.toFixed(1);
+        const balEl = document.getElementById('balance');
+        if (balEl) balEl.textContent = '$' + bal.toFixed(1);
       } catch (e) {}
     }
 
@@ -366,6 +454,10 @@
 
     // Buy
     async function buy() {
+      if (!walletConnected) {
+        alert('Please connect your wallet first');
+        return;
+      }
       const query = document.getElementById('query').value;
       const btn = document.getElementById('buy-btn');
       const results = document.getElementById('results');
@@ -445,8 +537,18 @@
     document.getElementById('query').onkeypress = e => { if (e.key === 'Enter') buy(); };
     document.getElementById('buy-btn').onclick = buy;
 
-    loadBalance();
-    loadHistory();
+    // Check if already connected
+    if (window.ethereum) {
+      window.ethereum.request({ method: 'eth_accounts' }).then(accounts => {
+        if (accounts.length > 0) {
+          userAddress = accounts[0];
+          walletConnected = true;
+          updateWalletUI();
+          loadBalance();
+          loadHistory();
+        }
+      });
+    }
   </script>
 </body>
 </html>
