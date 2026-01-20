@@ -415,9 +415,14 @@
             <span class="agent-balance-amount" id="agent-balance">$0.0</span>
             <span style="color: var(--text-2); font-size: 13px; margin-left: 4px;">USDC</span>
           </div>
-          <button class="fund-btn" onclick="showFundInfo()">
-            <i data-lucide="plus" style="width:14px;height:14px;display:inline;vertical-align:middle;margin-right:4px;"></i>Fund Agent
-          </button>
+          <div style="display: flex; gap: 8px;">
+            <button class="fund-btn" onclick="showFundInfo()">
+              <i data-lucide="send" style="width:14px;height:14px;display:inline;vertical-align:middle;margin-right:4px;"></i>Fund
+            </button>
+            <a href="https://faucet.circle.com" target="_blank" class="fund-btn" style="background: var(--border); text-decoration: none;">
+              Faucet
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -585,9 +590,37 @@
       setTimeout(() => toast.remove(), 2000);
     }
 
-    function showFundInfo() {
-      if (agentAddress) {
-        alert('Send USDC on Arc Testnet to your agent:\\n\\n' + agentAddress + '\\n\\nGet testnet USDC from: https://faucet.circle.com');
+    async function showFundInfo() {
+      if (!agentAddress || !userAddress) return;
+
+      const amount = prompt('Enter amount to fund (in USDC):', '5');
+      if (!amount || isNaN(parseFloat(amount))) return;
+
+      try {
+        const amountWei = '0x' + (parseFloat(amount) * 1e18).toString(16);
+
+        const txHash = await window.ethereum.request({
+          method: 'eth_sendTransaction',
+          params: [{
+            from: userAddress,
+            to: agentAddress,
+            value: amountWei,
+          }]
+        });
+
+        showToast('Funding transaction sent!');
+
+        // Wait for confirmation and refresh balance
+        setTimeout(() => {
+          loadBalance();
+          showToast('Agent funded with $' + amount);
+        }, 3000);
+      } catch (e) {
+        if (e.code === 4001) {
+          showToast('Transaction cancelled');
+        } else {
+          alert('Failed to fund: ' + e.message);
+        }
       }
     }
 
