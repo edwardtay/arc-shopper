@@ -17,6 +17,7 @@
       --text-2: #a1a1aa;
       --accent: #8b5cf6;
       --success: #10b981;
+      --circle: #00d395;
     }
     body {
       font-family: 'Inter', sans-serif;
@@ -50,34 +51,12 @@
       justify-content: center;
     }
     .logo-icon i { width: 20px; height: 20px; color: white; }
-    .balance {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 16px;
-      background: var(--surface);
-      border-radius: 10px;
-    }
-    .balance-amount {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--success);
-    }
-    .balance-label {
-      font-size: 12px;
-      color: var(--text-2);
-      background: #2775ca;
-      padding: 2px 8px;
-      border-radius: 4px;
-      color: white;
-      font-weight: 600;
-    }
-    .connect-btn {
+    .signin-btn {
       padding: 10px 20px;
-      background: var(--accent);
+      background: var(--circle);
       border: none;
       border-radius: 10px;
-      color: white;
+      color: #000;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
@@ -85,27 +64,25 @@
       align-items: center;
       gap: 8px;
     }
-    .connect-btn:hover { opacity: 0.9; }
-    .connect-btn i { width: 18px; height: 18px; }
-    .wallet-info {
+    .signin-btn:hover { opacity: 0.9; }
+    .signin-btn i { width: 18px; height: 18px; }
+    .user-info {
       display: flex;
       align-items: center;
       gap: 12px;
     }
-    .wallet-address {
+    .user-email {
       font-size: 13px;
-      color: var(--text-2);
+      color: var(--text);
       background: var(--surface);
-      padding: 8px 12px;
+      padding: 8px 14px;
       border-radius: 8px;
-      cursor: pointer;
       display: flex;
       align-items: center;
       gap: 6px;
     }
-    .wallet-address:hover { background: var(--border); }
-    .wallet-address i { width: 14px; height: 14px; }
-    .disconnect-btn {
+    .user-email i { width: 14px; height: 14px; color: var(--circle); }
+    .signout-btn {
       background: none;
       border: none;
       color: var(--text-2);
@@ -113,72 +90,166 @@
       padding: 8px;
       border-radius: 6px;
     }
-    .disconnect-btn:hover { background: var(--surface); color: #ef4444; }
-    .disconnect-btn i { width: 16px; height: 16px; }
-    .agent-card {
-      background: var(--surface);
+    .signout-btn:hover { background: var(--surface); color: #ef4444; }
+    .signout-btn i { width: 16px; height: 16px; }
+
+    /* Wallet Card */
+    .wallet-card {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
+      border-radius: 16px;
+      padding: 20px;
       margin-bottom: 24px;
     }
-    .agent-card-header {
+    .wallet-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
-    .agent-label {
-      font-size: 12px;
-      color: var(--text-2);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .agent-address {
+    .wallet-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       font-size: 13px;
-      color: var(--text);
+      color: var(--text-2);
+    }
+    .wallet-label i { width: 16px; height: 16px; color: var(--circle); }
+    .powered-by {
+      font-size: 11px;
+      color: var(--text-2);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .powered-by span { color: var(--circle); font-weight: 600; }
+    .wallet-address {
       font-family: monospace;
+      font-size: 14px;
+      color: var(--text);
+      background: rgba(255,255,255,0.05);
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .wallet-address:hover { background: rgba(255,255,255,0.1); }
+    .wallet-address i { width: 14px; height: 14px; color: var(--text-2); }
+    .wallet-balance {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .balance-display {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .balance-amount {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--success);
+    }
+    .balance-currency {
+      font-size: 14px;
+      color: var(--text-2);
+    }
+    .fund-btn {
+      padding: 10px 20px;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 6px;
     }
-    .agent-address:hover { color: var(--accent); }
-    .agent-balance {
-      display: flex;
+    .fund-btn:hover { opacity: 0.9; }
+    .fund-btn i { width: 16px; height: 16px; }
+
+    /* Sign In Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
       align-items: center;
-      justify-content: space-between;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
+      justify-content: center;
     }
-    .agent-balance-amount {
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 32px;
+      width: 100%;
+      max-width: 400px;
+      margin: 20px;
+    }
+    .modal-title {
       font-size: 24px;
       font-weight: 700;
-      color: var(--success);
+      margin-bottom: 8px;
+      text-align: center;
     }
-    .fund-btn {
-      padding: 8px 16px;
-      background: var(--accent);
-      border: none;
-      border-radius: 8px;
-      color: white;
+    .modal-subtitle {
+      color: var(--text-2);
+      text-align: center;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+    .input-group {
+      margin-bottom: 16px;
+    }
+    .input-group label {
+      display: block;
       font-size: 13px;
+      color: var(--text-2);
+      margin-bottom: 6px;
+    }
+    .input-group input {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 16px;
+    }
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--circle);
+    }
+    .modal-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--circle);
+      border: none;
+      border-radius: 10px;
+      color: #000;
+      font-size: 16px;
       font-weight: 600;
       cursor: pointer;
+      margin-top: 8px;
     }
-    .fund-btn:hover { opacity: 0.9; }
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-size: 14px;
-      z-index: 1000;
+    .modal-btn:hover { opacity: 0.9; }
+    .modal-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .modal-footer {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 12px;
+      color: var(--text-2);
     }
+    .modal-footer a { color: var(--circle); }
 
     /* Main */
     main {
@@ -388,41 +459,77 @@
     .history-item i { width: 16px; height: 16px; color: var(--success); }
     .history-name { flex: 1; }
     .history-amount { font-weight: 600; color: var(--success); }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      z-index: 1001;
+    }
   </style>
 </head>
 <body>
   <header>
     <div class="logo">
-      <div class="logo-icon"><i data-lucide="bot"></i></div>
+      <div class="logo-icon"><i data-lucide="shopping-bag"></i></div>
       ArcShopper
     </div>
-    <div id="wallet-section">
-      <button class="connect-btn" id="connect-btn" onclick="connectWallet()">
-        <i data-lucide="wallet"></i> Connect Wallet
+    <div id="auth-section">
+      <button class="signin-btn" onclick="showSignIn()">
+        <i data-lucide="user"></i> Sign In
       </button>
     </div>
   </header>
 
+  <!-- Sign In Modal -->
+  <div class="modal-overlay" id="signin-modal">
+    <div class="modal">
+      <h2 class="modal-title">Welcome to ArcShopper</h2>
+      <p class="modal-subtitle">Sign in with your email to start shopping</p>
+      <div class="input-group">
+        <label>Email Address</label>
+        <input type="email" id="email-input" placeholder="you@example.com" />
+      </div>
+      <button class="modal-btn" id="signin-submit" onclick="signIn()">
+        Continue
+      </button>
+      <p class="modal-footer">
+        Powered by <a href="https://www.circle.com/programmable-wallets" target="_blank">Circle</a> Programmable Wallets
+      </p>
+    </div>
+  </div>
+
   <main>
-    <div id="agent-card" style="display: none;">
-      <div class="agent-card">
-        <div class="agent-card-header">
-          <span class="agent-label">Your Shopping Agent</span>
-          <span class="agent-address" onclick="copyAgentAddress()" id="agent-address">Loading...</span>
+    <div id="wallet-card" style="display: none;">
+      <div class="wallet-card">
+        <div class="wallet-header">
+          <div class="wallet-label">
+            <i data-lucide="wallet"></i>
+            Your Shopping Wallet
+          </div>
+          <div class="powered-by">
+            Powered by <span>Circle</span>
+          </div>
         </div>
-        <div class="agent-balance">
-          <div>
-            <span class="agent-balance-amount" id="agent-balance">$0.0</span>
-            <span style="color: var(--text-2); font-size: 13px; margin-left: 4px;">USDC</span>
+        <div class="wallet-address" onclick="copyAddress()" id="wallet-address">
+          <span>Loading...</span>
+          <i data-lucide="copy"></i>
+        </div>
+        <div class="wallet-balance">
+          <div class="balance-display">
+            <span class="balance-amount" id="wallet-balance">$0.0</span>
+            <span class="balance-currency">USDC</span>
           </div>
-          <div style="display: flex; gap: 8px;">
-            <button class="fund-btn" onclick="showFundInfo()">
-              <i data-lucide="send" style="width:14px;height:14px;display:inline;vertical-align:middle;margin-right:4px;"></i>Fund
-            </button>
-            <a href="https://faucet.circle.com" target="_blank" class="fund-btn" style="background: var(--border); text-decoration: none;">
-              Faucet
-            </a>
-          </div>
+          <a href="https://faucet.circle.com" target="_blank" class="fund-btn">
+            <i data-lucide="plus"></i> Get Testnet USDC
+          </a>
         </div>
       </div>
     </div>
@@ -432,7 +539,7 @@
 
     <div class="search-box">
       <input class="search-input" id="query" placeholder="e.g. Buy API credits under $5" />
-      <button class="search-btn" id="buy-btn">
+      <button class="search-btn" id="buy-btn" onclick="buy()">
         <i data-lucide="sparkles"></i> Buy
       </button>
     </div>
@@ -460,243 +567,144 @@
   <script>
     const API = '/api';
     const EXPLORER = 'https://testnet.arcscan.app';
-    const ARC_CHAIN_ID = '0x4CF552'; // 5042002 in hex
-    let walletConnected = false;
-    let userAddress = null;
-    let agentAddress = null;
-    let walletId = null; // Circle wallet ID
-    let useCircle = false; // Whether using Circle wallets
+
+    let isSignedIn = false;
+    let userEmail = null;
+    let walletAddress = null;
+    let walletId = null;
+
     lucide.createIcons();
 
-    // Connect Wallet
-    async function connectWallet() {
-      if (!window.ethereum) {
-        alert('Please install MetaMask to connect your wallet');
+    // Show sign in modal
+    function showSignIn() {
+      document.getElementById('signin-modal').classList.add('active');
+      document.getElementById('email-input').focus();
+    }
+
+    // Hide sign in modal
+    function hideSignIn() {
+      document.getElementById('signin-modal').classList.remove('active');
+    }
+
+    // Sign in with email
+    async function signIn() {
+      const email = document.getElementById('email-input').value.trim();
+      if (!email || !email.includes('@')) {
+        alert('Please enter a valid email address');
         return;
       }
+
+      const btn = document.getElementById('signin-submit');
+      btn.disabled = true;
+      btn.textContent = 'Creating wallet...';
+
       try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        userAddress = accounts[0];
-        walletConnected = true;
-
-        // Switch to Arc Testnet
-        try {
-          await window.ethereum.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: ARC_CHAIN_ID }],
-          });
-        } catch (switchError) {
-          if (switchError.code === 4902) {
-            await window.ethereum.request({
-              method: 'wallet_addEthereumChain',
-              params: [{
-                chainId: ARC_CHAIN_ID,
-                chainName: 'Arc Testnet',
-                nativeCurrency: { name: 'USDC', symbol: 'USDC', decimals: 18 },
-                rpcUrls: ['https://rpc.testnet.arc.network'],
-                blockExplorerUrls: ['https://testnet.arcscan.app']
-              }]
-            });
-          }
-        }
-
-        updateWalletUI();
-        await registerAgent();
-        loadHistory();
-      } catch (e) {
-        console.error('Wallet connection failed:', e);
-      }
-    }
-
-    // Register user's unique agent (tries Circle first, falls back to derived)
-    async function registerAgent() {
-      if (!userAddress) return;
-
-      // Check if Circle is configured
-      try {
-        const configRes = await fetch(API + '/circle/configured');
-        const configData = await configRes.json();
-
-        if (configData.configured) {
-          // Use Circle Developer-Controlled Wallet
-          const res = await fetch(API + '/circle/wallet', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: userAddress })
-          });
-          const data = await res.json();
-          if (data.success) {
-            agentAddress = data.walletAddress;
-            walletId = data.walletId;
-            useCircle = true;
-            updateAgentUI({
-              agentAddress: data.walletAddress,
-              balance: '$' + parseFloat(data.balance?.usdc || '0').toFixed(1),
-            });
-            return;
-          }
-        }
-      } catch (e) {
-        console.log('Circle not available, using derived wallet');
-      }
-
-      // Fall back to derived wallet
-      try {
-        const res = await fetch(API + '/agent/register', {
+        // Create/get Circle wallet for this email
+        const res = await fetch(API + '/circle/wallet', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userAddress })
+          body: JSON.stringify({ userId: email })
         });
         const data = await res.json();
-        if (data.success) {
-          agentAddress = data.agentAddress;
-          updateAgentUI(data);
+
+        if (data.success || data.walletAddress) {
+          userEmail = email;
+          walletAddress = data.walletAddress;
+          walletId = data.walletId;
+          isSignedIn = true;
+
+          // Save to localStorage
+          localStorage.setItem('arcshopper_email', email);
+          localStorage.setItem('arcshopper_wallet', walletAddress);
+          localStorage.setItem('arcshopper_walletId', walletId);
+
+          hideSignIn();
+          updateUI();
+          loadBalance();
+          loadHistory();
+        } else {
+          throw new Error(data.error || 'Failed to create wallet');
         }
       } catch (e) {
-        console.error('Failed to register agent:', e);
+        alert('Sign in failed: ' + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Continue';
       }
     }
 
-    // Update agent card UI
-    function updateAgentUI(data) {
-      const shortAgent = data.agentAddress.slice(0, 6) + '...' + data.agentAddress.slice(-4);
-      const agentEl = document.getElementById('agent-address');
-      if (agentEl) agentEl.innerHTML = shortAgent + ' <i data-lucide="copy" style="width:12px;height:12px;"></i>';
-
-      const balEl = document.getElementById('agent-balance');
-      if (balEl) balEl.textContent = data.balance || '$0.0';
-
-      document.getElementById('agent-card').style.display = 'block';
-      lucide.createIcons();
+    // Sign out
+    function signOut() {
+      isSignedIn = false;
+      userEmail = null;
+      walletAddress = null;
+      walletId = null;
+      localStorage.removeItem('arcshopper_email');
+      localStorage.removeItem('arcshopper_wallet');
+      localStorage.removeItem('arcshopper_walletId');
+      updateUI();
     }
 
-    function updateWalletUI() {
-      const section = document.getElementById('wallet-section');
-      if (walletConnected && userAddress) {
-        const short = userAddress.slice(0, 6) + '...' + userAddress.slice(-4);
-        section.innerHTML = `
-          <div class="wallet-info">
-            <span class="wallet-address" onclick="copyUserAddress()" title="Click to copy">
-              ${short} <i data-lucide="copy"></i>
-            </span>
-            <button class="disconnect-btn" onclick="disconnectWallet()" title="Disconnect">
+    // Update UI based on auth state
+    function updateUI() {
+      const authSection = document.getElementById('auth-section');
+      const walletCard = document.getElementById('wallet-card');
+
+      if (isSignedIn && userEmail) {
+        authSection.innerHTML = `
+          <div class="user-info">
+            <div class="user-email">
+              <i data-lucide="check-circle"></i>
+              ${userEmail}
+            </div>
+            <button class="signout-btn" onclick="signOut()" title="Sign Out">
               <i data-lucide="log-out"></i>
             </button>
           </div>
         `;
-        lucide.createIcons();
-        document.getElementById('agent-card').style.display = 'block';
+        walletCard.style.display = 'block';
+
+        if (walletAddress) {
+          const short = walletAddress.slice(0, 8) + '...' + walletAddress.slice(-6);
+          document.getElementById('wallet-address').innerHTML = `
+            <span>${short}</span>
+            <i data-lucide="copy"></i>
+          `;
+        }
+      } else {
+        authSection.innerHTML = `
+          <button class="signin-btn" onclick="showSignIn()">
+            <i data-lucide="user"></i> Sign In
+          </button>
+        `;
+        walletCard.style.display = 'none';
       }
-    }
 
-    function copyUserAddress() {
-      navigator.clipboard.writeText(userAddress);
-      showToast('Wallet address copied!');
-    }
-
-    function copyAgentAddress() {
-      if (agentAddress) {
-        navigator.clipboard.writeText(agentAddress);
-        showToast('Agent address copied!');
-      }
-    }
-
-    function disconnectWallet() {
-      walletConnected = false;
-      userAddress = null;
-      const section = document.getElementById('wallet-section');
-      section.innerHTML = `
-        <button class="connect-btn" onclick="connectWallet()">
-          <i data-lucide="wallet"></i> Connect Wallet
-        </button>
-      `;
-      document.getElementById('agent-card').style.display = 'none';
       lucide.createIcons();
     }
 
-    function showToast(msg) {
-      const toast = document.createElement('div');
-      toast.className = 'toast';
-      toast.textContent = msg;
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2000);
-    }
-
-    async function showFundInfo() {
-      if (!agentAddress || !userAddress) return;
-
-      const amount = prompt('Enter amount to fund (in USDC):', '5');
-      if (!amount || isNaN(parseFloat(amount))) return;
-
-      try {
-        const amountWei = '0x' + (parseFloat(amount) * 1e18).toString(16);
-
-        const txHash = await window.ethereum.request({
-          method: 'eth_sendTransaction',
-          params: [{
-            from: userAddress,
-            to: agentAddress,
-            value: amountWei,
-          }]
-        });
-
-        showToast('Funding transaction sent!');
-
-        // Wait for confirmation and refresh balance
-        setTimeout(() => {
-          loadBalance();
-          showToast('Agent funded with $' + amount);
-        }, 3000);
-      } catch (e) {
-        if (e.code === 4001) {
-          showToast('Transaction cancelled');
-        } else {
-          alert('Failed to fund: ' + e.message);
-        }
+    // Copy wallet address
+    function copyAddress() {
+      if (walletAddress) {
+        navigator.clipboard.writeText(walletAddress);
+        showToast('Wallet address copied!');
       }
     }
 
-    // Quick buttons
-    document.querySelectorAll('.quick-btn').forEach(btn => {
-      btn.onclick = () => document.getElementById('query').value = btn.dataset.q;
-    });
-
-    // Load user's agent balance
+    // Load wallet balance
     async function loadBalance() {
-      if (!userAddress) return;
+      if (!walletId) return;
       try {
-        let balanceUsd = '$0.0';
-
-        if (useCircle && walletId) {
-          // Load Circle wallet balance
-          const res = await fetch(API + '/circle/balance/' + walletId);
-          const data = await res.json();
-          balanceUsd = '$' + parseFloat(data.usdc || '0').toFixed(1);
-        } else {
-          // Load derived wallet balance
-          const res = await fetch(API + '/agent/status/' + userAddress);
-          const data = await res.json();
-          if (data.address) {
-            agentAddress = data.address;
-          }
-          balanceUsd = data.balanceUsd || '$0.0';
-        }
-
-        // Update UI
-        if (agentAddress) {
-          const shortAgent = agentAddress.slice(0, 6) + '...' + agentAddress.slice(-4);
-          const agentEl = document.getElementById('agent-address');
-          if (agentEl) agentEl.innerHTML = shortAgent + ' <i data-lucide="copy" style="width:12px;height:12px;"></i>';
-        }
-
-        const balEl = document.getElementById('agent-balance');
-        if (balEl) balEl.textContent = balanceUsd;
-
-        lucide.createIcons();
-      } catch (e) {}
+        const res = await fetch(API + '/circle/balance/' + walletId);
+        const data = await res.json();
+        const usdc = parseFloat(data.usdc || '0');
+        document.getElementById('wallet-balance').textContent = '$' + usdc.toFixed(2);
+      } catch (e) {
+        console.error('Failed to load balance:', e);
+      }
     }
 
-    // Load history
+    // Load purchase history
     async function loadHistory() {
       try {
         const res = await fetch(API + '/shop/orders');
@@ -717,10 +725,11 @@
 
     // Buy
     async function buy() {
-      if (!walletConnected) {
-        alert('Please connect your wallet first');
+      if (!isSignedIn) {
+        showSignIn();
         return;
       }
+
       const query = document.getElementById('query').value;
       const btn = document.getElementById('buy-btn');
       const results = document.getElementById('results');
@@ -734,7 +743,7 @@
         const res = await fetch(API + '/shop/buy', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query })
+          body: JSON.stringify({ query, userId: userEmail })
         });
         const data = await res.json();
 
@@ -797,20 +806,42 @@
       return icons[cat] || 'package';
     }
 
-    document.getElementById('query').onkeypress = e => { if (e.key === 'Enter') buy(); };
-    document.getElementById('buy-btn').onclick = buy;
+    function showToast(msg) {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
+    }
 
-    // Check if already connected
-    if (window.ethereum) {
-      window.ethereum.request({ method: 'eth_accounts' }).then(async accounts => {
-        if (accounts.length > 0) {
-          userAddress = accounts[0];
-          walletConnected = true;
-          updateWalletUI();
-          await registerAgent();
-          loadHistory();
-        }
-      });
+    // Quick buttons
+    document.querySelectorAll('.quick-btn').forEach(btn => {
+      btn.onclick = () => document.getElementById('query').value = btn.dataset.q;
+    });
+
+    // Enter key to search
+    document.getElementById('query').onkeypress = e => { if (e.key === 'Enter') buy(); };
+
+    // Enter key to sign in
+    document.getElementById('email-input').onkeypress = e => { if (e.key === 'Enter') signIn(); };
+
+    // Click outside modal to close
+    document.getElementById('signin-modal').onclick = e => {
+      if (e.target.id === 'signin-modal') hideSignIn();
+    };
+
+    // Check for saved session
+    const savedEmail = localStorage.getItem('arcshopper_email');
+    const savedWallet = localStorage.getItem('arcshopper_wallet');
+    const savedWalletId = localStorage.getItem('arcshopper_walletId');
+    if (savedEmail && savedWallet) {
+      userEmail = savedEmail;
+      walletAddress = savedWallet;
+      walletId = savedWalletId;
+      isSignedIn = true;
+      updateUI();
+      loadBalance();
+      loadHistory();
     }
   </script>
 </body>
