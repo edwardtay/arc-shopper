@@ -70,7 +70,7 @@ async function getOrCreateWalletSet(): Promise<string> {
     if (existingSets.length > 0) {
       globalWalletSetId = existingSets[0].id;
       console.log('Using existing Circle wallet set:', globalWalletSetId);
-      return globalWalletSetId;
+      return globalWalletSetId!;
     }
 
     // Create new wallet set
