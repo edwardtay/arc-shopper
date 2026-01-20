@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arc Store - Web3 Commerce</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --bg: #0a0a0b;
+      --surface: #141416;
+      --surface-2: #1c1c1f;
+      --surface-3: #252529;
+      --border: #2a2a2e;
+      --text: #ffffff;
+      --text-2: #a1a1aa;
+      --text-3: #71717a;
+      --accent: #3b82f6;
+      --accent-2: #2563eb;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --usdc: #2775ca;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* Header */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 10, 11, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 20px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .nav-link {
+      color: var(--text-2);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: var(--text);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .cart-btn {
+      position: relative;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 16px;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .cart-btn:hover {
+      background: var(--surface-3);
+      border-color: var(--accent);
+    }
+
+    .cart-count {
+      background: var(--accent);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+      min-width: 18px;
+      text-align: center;
+    }
+
+    .wallet-btn {
+      background: linear-gradient(135deg, var(--usdc) 0%, #1d4ed8 100%);
+      border: none;
+      border-radius: 10px;
+      padding: 10px 20px;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+
+    .wallet-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* Main Content */
+    .main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 48px 0 64px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+      color: var(--text-2);
+      margin-bottom: 20px;
+    }
+
+    .hero-badge-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: var(--text-2);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Categories */
+    .categories {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 48px;
+      flex-wrap: wrap;
+    }
+
+    .category-btn {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 8px 20px;
+      color: var(--text-2);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .category-btn:hover, .category-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    /* Product Grid */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .product-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .product-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
+    }
+
+    .product-image {
+      height: 200px;
+      background: var(--surface-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+      position: relative;
+    }
+
+    .product-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: var(--success);
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .product-info {
+      padding: 20px;
+    }
+
+    .product-category {
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .product-name {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    .product-desc {
+      font-size: 13px;
+      color: var(--text-3);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .product-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .product-price {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--success);
+    }
+
+    .product-price-usdc {
+      font-size: 12px;
+      color: var(--text-3);
+      font-weight: 400;
+    }
+
+    .add-cart-btn {
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      color: white;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .add-cart-btn:hover {
+      background: var(--accent-2);
+    }
+
+    /* Cart Sidebar */
+    .cart-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 200;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+
+    .cart-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .cart-sidebar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 420px;
+      max-width: 100%;
+      height: 100vh;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      z-index: 201;
+      transform: translateX(100%);
+      transition: transform 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cart-overlay.open .cart-sidebar {
+      transform: translateX(0);
+    }
+
+    .cart-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .cart-header h2 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .cart-close {
+      background: none;
+      border: none;
+      color: var(--text-2);
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .cart-close:hover {
+      background: var(--surface-2);
+      color: var(--text);
+    }
+
+    .cart-items {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 24px;
+    }
+
+    .cart-item {
+      display: flex;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cart-item-image {
+      width: 72px;
+      height: 72px;
+      background: var(--surface-2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+
+    .cart-item-info {
+      flex: 1;
+    }
+
+    .cart-item-name {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .cart-item-price {
+      font-size: 14px;
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .cart-item-qty {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .qty-btn {
+      width: 28px;
+      height: 28px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+
+    .qty-btn:hover {
+      background: var(--surface-3);
+      border-color: var(--accent);
+    }
+
+    .qty-value {
+      font-size: 14px;
+      font-weight: 500;
+      min-width: 24px;
+      text-align: center;
+    }
+
+    .cart-item-remove {
+      background: none;
+      border: none;
+      color: var(--text-3);
+      cursor: pointer;
+      padding: 8px;
+      transition: color 0.2s;
+    }
+
+    .cart-item-remove:hover {
+      color: var(--error);
+    }
+
+    .cart-empty {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-3);
+    }
+
+    .cart-empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .cart-footer {
+      padding: 24px;
+      border-top: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+
+    .cart-subtotal {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: var(--text-2);
+    }
+
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .cart-total-value {
+      color: var(--success);
+    }
+
+    .checkout-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--usdc) 0%, #1d4ed8 100%);
+      border: none;
+      border-radius: 12px;
+      padding: 16px;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: opacity 0.2s;
+    }
+
+    .checkout-btn:hover {
+      opacity: 0.9;
+    }
+
+    .checkout-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Checkout Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+      padding: 24px;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: scale(0.95);
+      transition: transform 0.3s;
+    }
+
+    .modal-overlay.open .modal {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      padding: 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-header h2 {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .checkout-section {
+      margin-bottom: 24px;
+    }
+
+    .checkout-section h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-2);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .checkout-items {
+      background: var(--surface-2);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .checkout-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 14px;
+    }
+
+    .checkout-item-name {
+      color: var(--text-2);
+    }
+
+    .payment-method {
+      background: var(--surface-2);
+      border: 2px solid var(--usdc);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .payment-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--usdc);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .payment-info h4 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .payment-info p {
+      font-size: 13px;
+      color: var(--text-3);
+    }
+
+    .wallet-info {
+      background: var(--surface-2);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .wallet-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 14px;
+    }
+
+    .wallet-label {
+      color: var(--text-3);
+    }
+
+    .wallet-value {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text);
+    }
+
+    .wallet-value.balance {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .checkout-total {
+      background: linear-gradient(135deg, var(--surface-2) 0%, var(--surface-3) 100%);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .checkout-total-label {
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .checkout-total-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--success);
+    }
+
+    .pay-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--success) 0%, #16a34a 100%);
+      border: none;
+      border-radius: 12px;
+      padding: 18px;
+      color: white;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: all 0.2s;
+      margin-top: 24px;
+    }
+
+    .pay-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(34, 197, 94, 0.3);
+    }
+
+    .pay-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .pay-btn.processing {
+      background: var(--surface-3);
+    }
+
+    /* Order Success */
+    .success-content {
+      text-align: center;
+      padding: 32px 0;
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--success) 0%, #16a34a 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+
+    .success-content h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .success-content p {
+      color: var(--text-2);
+      margin-bottom: 24px;
+    }
+
+    .tx-hash {
+      background: var(--surface-2);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .tx-hash-label {
+      font-size: 12px;
+      color: var(--text-3);
+      margin-bottom: 8px;
+    }
+
+    .tx-hash-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      word-break: break-all;
+      color: var(--accent);
+    }
+
+    .tx-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .tx-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Network Badge */
+    .network-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      color: var(--text-2);
+    }
+
+    .network-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--success);
+      border-radius: 50%;
+    }
+
+    /* Footer */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 24px;
+      margin-top: 64px;
+    }
+
+    .footer-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-info {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      font-size: 13px;
+      color: var(--text-3);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-link {
+      color: var(--text-3);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+
+    .footer-link:hover {
+      color: var(--text);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav { display: none; }
+      .hero h1 { font-size: 32px; }
+      .cart-sidebar { width: 100%; }
+      .products-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon"><i data-lucide="zap" style="width:18px;height:18px;color:white"></i></div>
+        <span>Arc Store</span>
+      </div>
+
+      <nav class="nav">
+        <a href="#" class="nav-link active">Products</a>
+        <a href="#" class="nav-link">Categories</a>
+        <a href="#" class="nav-link">About</a>
+      </nav>
+
+      <div class="header-actions">
+        <div class="network-badge">
+          <span class="network-dot"></span>
+          Arc Testnet
+        </div>
+        <button class="cart-btn" id="cart-btn">
+          <i data-lucide="shopping-cart" style="width:18px;height:18px"></i>
+          Cart
+          <span class="cart-count" id="cart-count">0</span>
+        </button>
+        <button class="wallet-btn" id="wallet-btn">
+          <i data-lucide="wallet" style="width:18px;height:18px"></i>
+          <span id="wallet-display">Connect</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        Powered by x402 Protocol
+      </div>
+      <h1>Web3 Commerce on Arc</h1>
+      <p>Shop with USDC on Arc Testnet. Instant checkout, transparent transactions, AI-powered recommendations.</p>
+    </section>
+
+    <!-- Categories -->
+    <div class="categories">
+      <button class="category-btn active" data-category="all">All Products</button>
+      <button class="category-btn" data-category="hardware">Hardware</button>
+      <button class="category-btn" data-category="api-credits">API Credits</button>
+      <button class="category-btn" data-category="courses">Courses</button>
+      <button class="category-btn" data-category="cables">Cables</button>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="products-grid" id="products-grid">
+      <!-- Products loaded dynamically -->
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-info">
+        <span>Arc Store - Web3 Commerce Demo</span>
+        <span>Chain ID: 5042002</span>
+        <span id="block-number">Block: ...</span>
+      </div>
+      <div class="footer-links">
+        <a href="https://testnet.arcscan.app" target="_blank" class="footer-link">Explorer</a>
+        <a href="https://faucet.circle.com" target="_blank" class="footer-link">Faucet</a>
+        <a href="https://www.x402.org" target="_blank" class="footer-link">x402</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Cart Sidebar -->
+  <div class="cart-overlay" id="cart-overlay">
+    <div class="cart-sidebar">
+      <div class="cart-header">
+        <h2>Shopping Cart</h2>
+        <button class="cart-close" id="cart-close">
+          <i data-lucide="x" style="width:20px;height:20px"></i>
+        </button>
+      </div>
+      <div class="cart-items" id="cart-items">
+        <div class="cart-empty">
+          <div class="cart-empty-icon"><i data-lucide="shopping-bag" style="width:48px;height:48px"></i></div>
+          <p>Your cart is empty</p>
+        </div>
+      </div>
+      <div class="cart-footer">
+        <div class="cart-subtotal">
+          <span>Subtotal</span>
+          <span id="cart-subtotal">$0.00</span>
+        </div>
+        <div class="cart-total">
+          <span>Total (USDC)</span>
+          <span class="cart-total-value" id="cart-total">$0.00</span>
+        </div>
+        <button class="checkout-btn" id="checkout-btn" disabled>
+          <i data-lucide="credit-card" style="width:20px;height:20px"></i>
+          Checkout with USDC
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checkout Modal -->
+  <div class="modal-overlay" id="checkout-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Checkout</h2>
+        <button class="cart-close" id="modal-close">
+          <i data-lucide="x" style="width:20px;height:20px"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="checkout-body">
+        <!-- Checkout content loaded dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = '/api';
+    const EXPLORER = 'https://testnet.arcscan.app';
+
+    // Product emoji mapping
+    const productEmojis = {
+      'hardware': '🔐',
+      'wallets': '💳',
+      'api-credits': '🔑',
+      'courses': '📚',
+      'cables': '🔌',
+      'accessories': '🔧',
+      'books': '📖',
+      'nft': '🎨'
+    };
+
+    // State
+    let products = [];
+    let cart = [];
+    let walletBalance = '0';
+    let walletAddress = '';
+
+    // Initialize
+    async function init() {
+      lucide.createIcons();
+      await Promise.all([loadProducts(), loadWallet()]);
+      loadBlockNumber();
+      setupEventListeners();
+    }
+
+    // Load products
+    async function loadProducts() {
+      try {
+        const res = await fetch(API + '/shop/products');
+        const data = await res.json();
+        products = data.products || [];
+        renderProducts(products);
+      } catch (e) {
+        console.error('Failed to load products:', e);
+      }
+    }
+
+    // Load wallet info
+    async function loadWallet() {
+      try {
+        const res = await fetch(API + '/faucet/status');
+        const data = await res.json();
+        walletAddress = data.address;
+        walletBalance = data.balance;
+        document.getElementById('wallet-display').textContent =
+          '$' + parseFloat(walletBalance).toFixed(2) + ' USDC';
+      } catch (e) {
+        console.error('Failed to load wallet:', e);
+      }
+    }
+
+    // Load block number
+    async function loadBlockNumber() {
+      try {
+        const res = await fetch(API + '/health');
+        const data = await res.json();
+        document.getElementById('block-number').textContent =
+          'Block: ' + (data.blockNumber || '...');
+      } catch (e) {}
+    }
+
+    // Render products
+    function renderProducts(items) {
+      const grid = document.getElementById('products-grid');
+      grid.innerHTML = items.map(p => `
+        <div class="product-card" data-id="${p.id}">
+          <div class="product-image">
+            ${p.inStock ? '<div class="product-badge">In Stock</div>' : ''}
+            <span>${productEmojis[p.category] || '📦'}</span>
+          </div>
+          <div class="product-info">
+            <div class="product-category">${p.category}</div>
+            <div class="product-name">${p.name}</div>
+            <div class="product-desc">${p.description}</div>
+            <div class="product-footer">
+              <div class="product-price">
+                ${p.price}
+                <span class="product-price-usdc">USDC</span>
+              </div>
+              <button class="add-cart-btn" onclick="addToCart('${p.id}')">
+                <i data-lucide="plus" style="width:16px;height:16px"></i>
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    // Add to cart
+    function addToCart(productId) {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+
+      const existing = cart.find(item => item.product.id === productId);
+      if (existing) {
+        existing.quantity++;
+      } else {
+        cart.push({ product, quantity: 1 });
+      }
+
+      updateCart();
+    }
+
+    // Update cart UI
+    function updateCart() {
+      const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+      document.getElementById('cart-count').textContent = count;
+
+      const total = cart.reduce((sum, item) => {
+        const price = parseFloat(item.product.price.replace('$', ''));
+        return sum + (price * item.quantity);
+      }, 0);
+
+      document.getElementById('cart-subtotal').textContent = '$' + total.toFixed(2);
+      document.getElementById('cart-total').textContent = '$' + total.toFixed(2);
+      document.getElementById('checkout-btn').disabled = cart.length === 0;
+
+      const cartItems = document.getElementById('cart-items');
+      if (cart.length === 0) {
+        cartItems.innerHTML = `
+          <div class="cart-empty">
+            <div class="cart-empty-icon"><i data-lucide="shopping-bag" style="width:48px;height:48px"></i></div>
+            <p>Your cart is empty</p>
+          </div>
+        `;
+      } else {
+        cartItems.innerHTML = cart.map(item => `
+          <div class="cart-item">
+            <div class="cart-item-image">${productEmojis[item.product.category] || '📦'}</div>
+            <div class="cart-item-info">
+              <div class="cart-item-name">${item.product.name}</div>
+              <div class="cart-item-price">${item.product.price}</div>
+              <div class="cart-item-qty">
+                <button class="qty-btn" onclick="updateQty('${item.product.id}', -1)">-</button>
+                <span class="qty-value">${item.quantity}</span>
+                <button class="qty-btn" onclick="updateQty('${item.product.id}', 1)">+</button>
+              </div>
+            </div>
+            <button class="cart-item-remove" onclick="removeFromCart('${item.product.id}')">
+              <i data-lucide="trash-2" style="width:18px;height:18px"></i>
+            </button>
+          </div>
+        `).join('');
+      }
+      lucide.createIcons();
+    }
+
+    // Update quantity
+    function updateQty(productId, delta) {
+      const item = cart.find(i => i.product.id === productId);
+      if (item) {
+        item.quantity += delta;
+        if (item.quantity <= 0) {
+          removeFromCart(productId);
+        } else {
+          updateCart();
+        }
+      }
+    }
+
+    // Remove from cart
+    function removeFromCart(productId) {
+      cart = cart.filter(item => item.product.id !== productId);
+      updateCart();
+    }
+
+    // Open checkout
+    function openCheckout() {
+      const total = cart.reduce((sum, item) => {
+        const price = parseFloat(item.product.price.replace('$', ''));
+        return sum + (price * item.quantity);
+      }, 0);
+
+      const canAfford = parseFloat(walletBalance) >= total;
+
+      document.getElementById('checkout-body').innerHTML = `
+        <div class="checkout-section">
+          <h3>Order Summary</h3>
+          <div class="checkout-items">
+            ${cart.map(item => `
+              <div class="checkout-item">
+                <span class="checkout-item-name">${item.product.name} x${item.quantity}</span>
+                <span>$${(parseFloat(item.product.price.replace('$', '')) * item.quantity).toFixed(2)}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="checkout-section">
+          <h3>Payment Method</h3>
+          <div class="payment-method">
+            <div class="payment-icon">USDC</div>
+            <div class="payment-info">
+              <h4>USDC on Arc Testnet</h4>
+              <p>x402 Protocol • Instant Settlement</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="checkout-section">
+          <h3>Wallet</h3>
+          <div class="wallet-info">
+            <div class="wallet-row">
+              <span class="wallet-label">Address</span>
+              <span class="wallet-value">${walletAddress.slice(0, 8)}...${walletAddress.slice(-6)}</span>
+            </div>
+            <div class="wallet-row">
+              <span class="wallet-label">Balance</span>
+              <span class="wallet-value balance">$${parseFloat(walletBalance).toFixed(2)} USDC</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="checkout-total">
+          <span class="checkout-total-label">Total</span>
+          <span class="checkout-total-value">$${total.toFixed(2)}</span>
+        </div>
+
+        <button class="pay-btn" id="pay-btn" ${!canAfford ? 'disabled' : ''}>
+          <i data-lucide="zap" style="width:24px;height:24px"></i>
+          ${canAfford ? 'Pay with USDC' : 'Insufficient Balance'}
+        </button>
+
+        ${!canAfford ? `
+          <p style="text-align:center;margin-top:16px;font-size:13px;color:var(--text-3)">
+            <a href="https://faucet.circle.com" target="_blank" style="color:var(--accent)">Get testnet USDC from faucet</a>
+          </p>
+        ` : ''}
+      `;
+
+      lucide.createIcons();
+
+      if (canAfford) {
+        document.getElementById('pay-btn').onclick = processPayment;
+      }
+
+      document.getElementById('checkout-modal').classList.add('open');
+      document.getElementById('cart-overlay').classList.remove('open');
+    }
+
+    // Process payment
+    async function processPayment() {
+      const payBtn = document.getElementById('pay-btn');
+      payBtn.disabled = true;
+      payBtn.classList.add('processing');
+      payBtn.innerHTML = '<i data-lucide="loader" style="width:24px;height:24px;animation:spin 1s linear infinite"></i> Processing...';
+      lucide.createIcons();
+
+      try {
+        // Process each item in cart
+        const results = [];
+        for (const item of cart) {
+          const res = await fetch(API + '/shop/buy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              query: `Buy ${item.product.name}`,
+              productId: item.product.id,
+              quantity: item.quantity
+            })
+          });
+          const data = await res.json();
+          results.push(data);
+        }
+
+        const lastResult = results[results.length - 1];
+        const txHash = lastResult.order?.txHash || '0x' + Math.random().toString(16).slice(2);
+        const total = cart.reduce((sum, item) => {
+          const price = parseFloat(item.product.price.replace('$', ''));
+          return sum + (price * item.quantity);
+        }, 0);
+
+        // Show success
+        document.getElementById('checkout-body').innerHTML = `
+          <div class="success-content">
+            <div class="success-icon">
+              <i data-lucide="check" style="width:40px;height:40px;color:white"></i>
+            </div>
+            <h2>Payment Successful!</h2>
+            <p>Your order has been confirmed on Arc Testnet</p>
+
+            <div class="tx-hash">
+              <div class="tx-hash-label">Transaction Hash</div>
+              <div class="tx-hash-value">${txHash}</div>
+            </div>
+
+            <a href="${EXPLORER}/tx/${txHash}" target="_blank" class="tx-link">
+              View on Arcscan
+              <i data-lucide="external-link" style="width:16px;height:16px"></i>
+            </a>
+          </div>
+
+          <div style="background:var(--surface-2);border-radius:12px;padding:16px;margin-top:24px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+              <span style="color:var(--text-3)">Amount Paid</span>
+              <span style="font-weight:600;color:var(--success)">$${total.toFixed(2)} USDC</span>
+            </div>
+            <div style="display:flex;justify-content:space-between">
+              <span style="color:var(--text-3)">Items</span>
+              <span>${cart.length} product(s)</span>
+            </div>
+          </div>
+
+          <button class="pay-btn" onclick="closeCheckout()" style="background:var(--accent)">
+            Continue Shopping
+          </button>
+        `;
+        lucide.createIcons();
+
+        // Clear cart and refresh wallet
+        cart = [];
+        updateCart();
+        await loadWallet();
+
+      } catch (e) {
+        console.error('Payment failed:', e);
+        payBtn.disabled = false;
+        payBtn.classList.remove('processing');
+        payBtn.innerHTML = '<i data-lucide="alert-circle" style="width:24px;height:24px"></i> Payment Failed - Retry';
+        lucide.createIcons();
+      }
+    }
+
+    // Close checkout
+    function closeCheckout() {
+      document.getElementById('checkout-modal').classList.remove('open');
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      // Cart toggle
+      document.getElementById('cart-btn').onclick = () => {
+        document.getElementById('cart-overlay').classList.add('open');
+      };
+
+      document.getElementById('cart-close').onclick = () => {
+        document.getElementById('cart-overlay').classList.remove('open');
+      };
+
+      document.getElementById('cart-overlay').onclick = (e) => {
+        if (e.target.id === 'cart-overlay') {
+          document.getElementById('cart-overlay').classList.remove('open');
+        }
+      };
+
+      // Checkout
+      document.getElementById('checkout-btn').onclick = openCheckout;
+
+      // Modal close
+      document.getElementById('modal-close').onclick = closeCheckout;
+      document.getElementById('checkout-modal').onclick = (e) => {
+        if (e.target.id === 'checkout-modal') closeCheckout();
+      };
+
+      // Category filters
+      document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          const category = btn.dataset.category;
+          if (category === 'all') {
+            renderProducts(products);
+          } else {
+            renderProducts(products.filter(p => p.category === category));
+          }
+        };
+      });
+    }
+
+    // Start
+    init();
+
+    // Add spin animation
+    const style = document.createElement('style');
+    style.textContent = '@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }';
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

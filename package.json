@@ -1,0 +1,53 @@
+{
+  "name": "arc-agentic",
+  "version": "1.0.0",
+  "description": "Agent Swarm with x402 Payments on Arc - Hackathon Project",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/index.ts",
+    "start": "node dist/index.js",
+    "demo": "ts-node src/demo.ts",
+    "setup": "ts-node src/demo.ts setup",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "arc",
+    "x402",
+    "agents",
+    "usdc",
+    "micropayments",
+    "ai",
+    "swarm"
+  ],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "@solana/pay": "^0.2.6",
+    "@solana/web3.js": "^1.98.4",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.0.9",
+    "@types/uuid": "^10.0.0",
+    "@x402/core": "^2.2.0",
+    "@x402/evm": "^2.2.0",
+    "@x402/express": "^2.2.0",
+    "@x402/fetch": "^2.2.0",
+    "axios": "^1.13.2",
+    "bignumber.js": "^9.3.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "ethers": "^6.16.0",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.2.1",
+    "express-validator": "^7.3.1",
+    "openai": "^6.16.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/express-validator": "^2.20.33"
+  }
+}
