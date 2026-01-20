@@ -17,6 +17,7 @@ import { getCrossmintClient } from '../commerce/crossmint';
 import { getHelioClient } from '../commerce/helio';
 import { getWalletStatus, getFundingInstructions, canAffordTransaction, FAUCET_URL } from '../faucet';
 import { getFacilitator, VerifyRequest, SettleRequest } from '../facilitator';
+import { getOrCreateUserAgent, getAgentBalance, getAgentWallet } from '../agent/user-agents';
 
 // Validation middleware helper
 const validate = (req: Request, res: Response, next: NextFunction) => {
@@ -211,6 +212,49 @@ export function createServer() {
       recentActions: memory.actionHistory.slice(-10),
       recentPayments: memory.paymentHistory.slice(-10),
     });
+  });
+
+  // ==================== PER-USER AGENT ENDPOINTS ====================
+
+  // Register user and get their unique agent wallet
+  app.post('/api/agent/register',
+    body('userAddress').isString().matches(/^0x[a-fA-F0-9]{40}$/),
+    validate,
+    async (req: Request, res: Response) => {
+      const { userAddress } = req.body;
+
+      try {
+        const userAgent = getOrCreateUserAgent(userAddress);
+        const balance = await getAgentBalance(userAddress);
+
+        res.json({
+          success: true,
+          userAddress: userAgent.userAddress,
+          agentAddress: userAgent.agentAddress,
+          balance: balance.balanceUsd,
+          needsFunding: balance.needsFunding,
+          createdAt: userAgent.createdAt,
+        });
+      } catch (error) {
+        res.status(500).json({ error: 'Failed to register agent' });
+      }
+    }
+  );
+
+  // Get user's agent status
+  app.get('/api/agent/status/:userAddress', async (req: Request, res: Response) => {
+    const userAddress = req.params.userAddress as string;
+
+    if (!/^0x[a-fA-F0-9]{40}$/.test(userAddress)) {
+      return res.status(400).json({ error: 'Invalid address' });
+    }
+
+    try {
+      const balance = await getAgentBalance(userAddress);
+      res.json(balance);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get agent status' });
+    }
   });
 
   // Policy management

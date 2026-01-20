@@ -494,11 +494,43 @@
         }
 
         updateWalletUI();
-        loadBalance();
+        await registerAgent();
         loadHistory();
       } catch (e) {
         console.error('Wallet connection failed:', e);
       }
+    }
+
+    // Register user's unique agent
+    async function registerAgent() {
+      if (!userAddress) return;
+      try {
+        const res = await fetch(API + '/agent/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userAddress })
+        });
+        const data = await res.json();
+        if (data.success) {
+          agentAddress = data.agentAddress;
+          updateAgentUI(data);
+        }
+      } catch (e) {
+        console.error('Failed to register agent:', e);
+      }
+    }
+
+    // Update agent card UI
+    function updateAgentUI(data) {
+      const shortAgent = data.agentAddress.slice(0, 6) + '...' + data.agentAddress.slice(-4);
+      const agentEl = document.getElementById('agent-address');
+      if (agentEl) agentEl.innerHTML = shortAgent + ' <i data-lucide="copy" style="width:12px;height:12px;"></i>';
+
+      const balEl = document.getElementById('agent-balance');
+      if (balEl) balEl.textContent = data.balance || '$0.0';
+
+      document.getElementById('agent-card').style.display = 'block';
+      lucide.createIcons();
     }
 
     function updateWalletUI() {
@@ -564,13 +596,13 @@
       btn.onclick = () => document.getElementById('query').value = btn.dataset.q;
     });
 
-    // Load agent info and balance
+    // Load user's agent balance
     async function loadBalance() {
+      if (!userAddress) return;
       try {
-        const res = await fetch(API + '/faucet/status');
+        const res = await fetch(API + '/agent/status/' + userAddress);
         const data = await res.json();
 
-        // Set agent address
         if (data.address) {
           agentAddress = data.address;
           const shortAgent = agentAddress.slice(0, 6) + '...' + agentAddress.slice(-4);
@@ -578,10 +610,8 @@
           if (agentEl) agentEl.innerHTML = shortAgent + ' <i data-lucide="copy" style="width:12px;height:12px;"></i>';
         }
 
-        // Set balance
-        const bal = parseFloat((data.balanceUsd || '$0').replace('$', ''));
         const balEl = document.getElementById('agent-balance');
-        if (balEl) balEl.textContent = '$' + bal.toFixed(1);
+        if (balEl) balEl.textContent = data.balanceUsd || '$0.0';
 
         lucide.createIcons();
       } catch (e) {}
@@ -693,12 +723,12 @@
 
     // Check if already connected
     if (window.ethereum) {
-      window.ethereum.request({ method: 'eth_accounts' }).then(accounts => {
+      window.ethereum.request({ method: 'eth_accounts' }).then(async accounts => {
         if (accounts.length > 0) {
           userAddress = accounts[0];
           walletConnected = true;
           updateWalletUI();
-          loadBalance();
+          await registerAgent();
           loadHistory();
         }
       });
