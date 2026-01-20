@@ -1,7 +1,7 @@
 {
-  "name": "arc-agentic",
+  "name": "arcbot",
   "version": "1.0.0",
-  "description": "Agent Swarm with x402 Payments on Arc - Hackathon Project",
+  "description": "ArcBot - Trustless AI Agent for autonomous shopping with on-chain USDC payments",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
