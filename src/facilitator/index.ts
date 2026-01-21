@@ -144,9 +144,16 @@ export class LocalFacilitator {
 
   // Settle an x402 payment on-chain
   async settle(request: SettleRequest, wallet: ethers.Wallet): Promise<SettleResponse> {
+    console.log('=== FACILITATOR SETTLE ===');
+    console.log('Wallet address:', wallet.address);
+    console.log('Request amount:', request.paymentDetails.amount);
+    console.log('Request recipient:', request.paymentDetails.recipient);
+
     // First verify the payment
     const verification = await this.verify(request);
+    console.log('Verification result:', verification);
     if (!verification.valid) {
+      console.log('Verification FAILED:', verification.error);
       return {
         success: false,
         error: verification.error || 'Payment verification failed',
@@ -158,6 +165,7 @@ export class LocalFacilitator {
     const settlementKey = request.paymentDetails.nonce;
     const existing = this.settlements.get(settlementKey);
     if (existing) {
+      console.log('Already settled, returning cached result:', existing.txHash);
       return existing;
     }
 
@@ -165,6 +173,7 @@ export class LocalFacilitator {
       // Execute the transfer
       const amountFormatted = ethers.formatUnits(request.paymentDetails.amount, 6);
       const amountWei = ethers.parseUnits(amountFormatted, 18); // Arc native is 18 decimals
+      console.log('Amount formatted:', amountFormatted, 'USDC -> Wei:', amountWei.toString());
 
       // Validate recipient address
       let recipient: string;
@@ -175,13 +184,18 @@ export class LocalFacilitator {
         const hash = ethers.keccak256(ethers.toUtf8Bytes(request.paymentDetails.recipient));
         recipient = ethers.getAddress('0x' + hash.slice(26));
       }
+      console.log('Recipient address:', recipient);
 
+      console.log('Sending transaction...');
       const tx = await wallet.sendTransaction({
         to: recipient,
         value: amountWei,
       });
+      console.log('Transaction sent! Hash:', tx.hash);
 
+      console.log('Waiting for confirmation...');
       const receipt = await tx.wait();
+      console.log('Transaction CONFIRMED! Block:', receipt?.blockNumber);
 
       const result: SettleResponse = {
         success: true,
@@ -193,25 +207,18 @@ export class LocalFacilitator {
       // Cache settlement
       this.settlements.set(settlementKey, result);
 
+      console.log('Settlement SUCCESS:', result.txHash);
       return result;
-    } catch (error) {
-      // If on-chain fails, generate demo tx hash
-      const demoHash = ethers.keccak256(
-        ethers.toUtf8Bytes(
-          request.paymentDetails.nonce +
-          request.paymentDetails.amount +
-          Date.now().toString()
-        )
-      );
-
-      const result: SettleResponse = {
-        success: true,
-        txHash: demoHash,
-        settlementType: 'direct',
+    } catch (error: any) {
+      // No mock - fail if real transaction fails
+      console.error('=== FACILITATOR TX FAILED ===');
+      console.error('Error:', error.message);
+      console.error('Full error:', error);
+      return {
+        success: false,
+        error: 'Transaction failed: ' + (error.message || 'Unknown error'),
+        settlementType: 'facilitator',
       };
-
-      this.settlements.set(settlementKey, result);
-      return result;
     }
   }
 

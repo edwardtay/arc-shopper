@@ -1,206 +1,306 @@
 # ArcShopper
 
-**Trustless AI Shopping Agent** - Buy gated digital content with real USDC payments via x402 protocol on Arc testnet.
+**Autonomous Commerce Agent with x402 HTTP Payment Protocol**
 
-🔗 **Live Demo:** https://arc-agentic.vercel.app
+ArcShopper demonstrates machine-to-machine payments using the x402 protocol—an extension of HTTP that enables programmatic, cryptographically-signed payment authorization without human intervention at transaction time. An AI agent autonomously discovers, evaluates, and purchases digital content while a policy engine enforces spending constraints.
 
-## What It Does
+## Core Concept
 
-ArcShopper demonstrates the x402 HTTP Payment Protocol for gated digital content:
+Traditional web payments require user interaction at checkout. x402 eliminates this friction by embedding payment authorization directly into HTTP request/response cycles. When a resource returns `402 Payment Required`, the client can automatically construct a signed payment payload, submit it for settlement, and retry the request—all without user intervention.
 
-1. **User requests content** → GET /api/x402/products
-2. **Server returns HTTP 402** → Payment Required with amount, recipient, token
-3. **User pays USDC on-chain** → Real transfer on Arc testnet
-4. **User retries with proof** → X-Payment-TxHash header
-5. **Server verifies & delivers** → Content unlocked!
+This project implements that flow end-to-end: from wallet provisioning to EIP-712 signature generation to on-chain settlement to gated content delivery.
 
-## Digital Products (Real Gated Content)
-
-| Product | Price | What You Get |
-|---------|-------|--------------|
-| **API Key** | $0.50 | 30-day API access key |
-| **Security Report** | $1.00 | DeFi audit report + download |
-| **Code Template** | $2.00 | x402 integration kit |
-| **AI Credits** | $1.50 | 100 image generation credits |
-| **Solidity Course** | $1.00 | 10 video modules + certificate |
-
-Each product generates **unique access tokens/keys** based on the payment transaction hash.
-
-## Technical Architecture
-
-### Stack
-- **Frontend:** Vanilla HTML/JS (single page)
-- **Backend:** Vercel Serverless Functions (TypeScript)
-- **Blockchain:** Arc Testnet (Chain ID: 5042002)
-- **Token:** USDC at `0x3600000000000000000000000000000000000000`
-- **Protocol:** x402 (HTTP 402 Payment Required)
-
-### x402 Flow (Visible in Network Tab!)
+## System Architecture
 
 ```
-┌─────────┐     GET /product      ┌──────────┐
-│  User   │ ──────────────────────▶│ Merchant │
-│ Browser │ ◀────────────────────── │  Server  │
-└────┬────┘    HTTP 402 + Headers  └────┬─────┘
-     │                                   │
-     │  X-Payment-Amount: 1.00           │
-     │  X-Payment-Address: 0xdead...     │
-     │  X-Payment-Network: arc-testnet   │
-     │                                   │
-     ▼                                   │
-┌─────────┐   USDC.transfer()     ┌──────────┐
-│   Arc   │ ◀─────────────────────│  User    │
-│ Testnet │                       │  Wallet  │
-└────┬────┘                       └────┬─────┘
-     │                                 │
-     │  txHash: 0xabc123...            │
-     ▼                                 ▼
-┌─────────┐  GET + X-Payment-TxHash  ┌──────────┐
-│  User   │ ─────────────────────────▶│ Merchant │
-│ Browser │ ◀───────────────────────── │  Server  │
-└─────────┘    HTTP 200 + Content    └──────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              CLIENT LAYER                                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  User (Email Auth)                                                          │
+│       │                                                                      │
+│       ▼                                                                      │
+│  Wallet Provisioning ────────────────────────────────────────────────────┐  │
+│       │                                                                   │  │
+│       ├── Circle Developer-Controlled Wallet (primary)                   │  │
+│       │       └── Custodial wallet via Circle API                        │  │
+│       │       └── Encrypted key storage                                  │  │
+│       │                                                                   │  │
+│       └── Local Deterministic Wallet (fallback)                          │  │
+│               └── keccak256(email) → private key derivation              │  │
+│               └── Zero external dependencies                             │  │
+│                                                                           │  │
+└───────────────────────────────────────────────────────────────────────────┘  │
+                                                                               │
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              AGENT LAYER                                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  Shopping Agent (LLM-powered)                                               │
+│       │                                                                      │
+│       ├── Natural language query parsing                                    │
+│       ├── Product catalog search & matching                                 │
+│       └── Purchase intent extraction                                        │
+│               │                                                              │
+│               ▼                                                              │
+│  Policy Engine ──────────────────────────────────────────────────────────┐  │
+│       │                                                                   │  │
+│       ├── Per-transaction limits ($10 max default)                       │  │
+│       ├── Daily spending caps                                            │  │
+│       ├── Category restrictions                                          │  │
+│       └── Approval/rejection with audit trail                            │  │
+│                                                                           │  │
+└───────────────────────────────────────────────────────────────────────────┘  │
+                                                                               │
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              PAYMENT LAYER                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  x402 Client                                                                │
+│       │                                                                      │
+│       ├── Constructs payment payload:                                       │
+│       │       {                                                              │
+│       │         version: "2",                                               │
+│       │         scheme: "exact",                                            │
+│       │         networkId: "eip155:5042002",                                │
+│       │         asset: "0x...",                                             │
+│       │         amount: "990000",  // 6 decimals                            │
+│       │         recipient: "0x...",                                         │
+│       │         nonce: "0x...",    // 32-byte random                        │
+│       │         expiry: 1234567890                                          │
+│       │       }                                                              │
+│       │                                                                      │
+│       └── Signs with EIP-712 typed data                                     │
+│               │                                                              │
+│               ▼                                                              │
+│  Local Facilitator                                                          │
+│       │                                                                      │
+│       ├── POST /api/x402/v2/verify                                          │
+│       │       └── Recovers signer from EIP-712 signature                    │
+│       │       └── Validates network, expiry, nonce                          │
+│       │                                                                      │
+│       └── POST /api/x402/v2/settle                                          │
+│               └── Executes on-chain transfer                                │
+│               └── Returns txHash for verification                           │
+│               └── Idempotent (nonce-based dedup)                            │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                                                               │
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              BLOCKCHAIN LAYER                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  Arc Testnet (Chain ID: 5042002)                                            │
+│       │                                                                      │
+│       ├── EVM-compatible execution                                          │
+│       ├── Native token for gas + payments                                   │
+│       └── Block explorer: testnet.arcscan.app                               │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Key Files
+## x402 Protocol Implementation
 
-```
-api/
-├── x402/products.ts    # x402 merchant endpoint (402 → verify → 200)
-├── shop/pay.ts         # Execute USDC transfer
-├── arc-wallet.ts       # Deterministic wallet derivation
-public/
-└── index.html          # Single-page app with x402 client
-```
+### EIP-712 Typed Data Structure
 
-### Wallet System
-
-Users sign in with email. Wallets are **deterministically derived** server-side:
+The x402 payment signature uses EIP-712 for structured, human-readable signing. The domain separator binds the signature to a specific chain and contract:
 
 ```typescript
-const seed = sha256(email + SERVER_SECRET);
-const wallet = new ethers.Wallet('0x' + seed, arcProvider);
+const domain = {
+  name: 'x402',
+  version: '2',
+  chainId: 5042002,
+  verifyingContract: assetAddress
+};
+
+const types = {
+  Payment: [
+    { name: 'version', type: 'string' },
+    { name: 'scheme', type: 'string' },
+    { name: 'networkId', type: 'string' },
+    { name: 'asset', type: 'address' },
+    { name: 'amount', type: 'uint256' },
+    { name: 'recipient', type: 'address' },
+    { name: 'nonce', type: 'bytes32' },
+    { name: 'expiry', type: 'uint256' }
+  ]
+};
 ```
 
-This enables:
-- No seed phrase management for users
-- Consistent wallet per email
-- Server can sign transactions on behalf of user
+### Payment Flow
 
-## No Facilitator (Direct x402)
+1. **Resource Request**: Client requests gated content
+2. **402 Response**: Server returns payment requirements in `X-402-*` headers
+3. **Signature Generation**: Client constructs payment payload, signs with user's private key
+4. **Facilitator Verification**: Signature verified via `ecrecover`, expiry/network validated
+5. **On-Chain Settlement**: Facilitator executes transfer, returns txHash
+6. **Content Delivery**: Original request retried with payment proof, content delivered
 
-This implementation uses **direct x402** without a facilitator:
+### Facilitator Architecture
 
-```
-User ──── USDC ────▶ Merchant
-     ◀─── Content ──
-```
+The facilitator is a trusted intermediary that:
 
-**Pros:** Simple, no middleman, lower fees
-**Cons:** User must trust merchant, no dispute resolution
+- **Verifies** EIP-712 signatures without requiring on-chain calls
+- **Settles** payments by executing the actual token transfer
+- **Deduplicates** via nonce tracking (prevents replay attacks)
+- **Abstracts** blockchain complexity from content servers
 
-### How a Facilitator Would Improve x402
+In production, facilitators would be operated by payment processors (Coinbase, etc.). This implementation includes a local facilitator for demonstration.
 
-A facilitator (like Coinbase's x402 implementation) adds:
+## Digital Product Catalog
 
-```
-User ── USDC ──▶ Facilitator ── USDC ──▶ Merchant
-     ◀─ Signed ─┘            ◀─ Content ─┘
-       Receipt
-```
+| Product | Price | Endpoint | Content Type |
+|---------|-------|----------|--------------|
+| Crypto API Access | $0.99 | `/api/gated/crypto-api` | Live price feed (BTC, ETH, SOL, ARC) |
+| Premium Image | $0.50 | `/api/gated/premium-image` | SVG network visualization |
+| Trend Report | $1.99 | `/api/gated/trend-report` | AI-generated market analysis |
+| Arc Crash Course | $2.99 | `/api/gated/course` | 5-module development curriculum |
 
-**Benefits:**
-1. **Escrow** - Hold funds until content delivered
-2. **Dispute Resolution** - Refunds if merchant doesn't deliver
-3. **Payment Attestations** - Cryptographic proof of payment
-4. **Multi-chain** - Facilitator handles cross-chain payments
-5. **Subscriptions** - Recurring payment management
-6. **Analytics** - Payment tracking dashboard
+Each endpoint validates the x402 payment header before serving content. Invalid or expired payments return `402 Payment Required` with fresh payment parameters.
 
-## Potential Improvements
+## Wallet Architecture
 
-### For This Demo
-- [ ] Add payment receipt signatures (EIP-712)
-- [ ] Implement content hash verification
-- [ ] Add subscription support for courses
-- [ ] Stream payments for API usage metering
-- [ ] Add refund mechanism
+### Circle Developer-Controlled Wallets (Primary)
 
-### For x402 Protocol
-- [ ] Standardize facilitator interface
-- [ ] Define payment attestation format
-- [ ] Add support for payment channels
-- [ ] Define dispute resolution flow
-- [ ] Multi-currency support (not just USDC)
+Circle's custodial wallet infrastructure provides:
+- Email-based wallet provisioning (no seed phrases)
+- Server-side key management with HSM backing
+- Programmatic transaction signing via API
+- Wallet-set isolation per application
 
-## Quick Start
+### Local Deterministic Wallets (Fallback)
 
-```bash
-# Clone
-git clone https://github.com/edwardtay/arc-shopper
-cd arc-shopper
+When Circle API is unavailable, the system derives wallets deterministically:
 
-# Install
-npm install
-
-# Deploy to Vercel
-npx vercel
-
-# Or run locally
-npm run dev
+```typescript
+const hash = keccak256(toUtf8Bytes(email.toLowerCase()));
+const privateKey = hash; // 32 bytes
+const wallet = new Wallet(privateKey);
 ```
 
-### Environment Variables
+This provides:
+- Zero external dependencies
+- Consistent address across sessions
+- Immediate availability
+
+**Security Note**: Deterministic derivation from email is suitable for testnet demonstration only. Production systems should use proper key management.
+
+## API Reference
+
+### Wallet Management
+
+```
+POST /api/circle/wallet
+Body: { email: string }
+Response: { address: string, walletId?: string }
+```
+
+Creates or retrieves wallet for email. Falls back to local derivation if Circle unavailable.
+
+```
+GET /api/balance/:address
+Response: { native: string, formatted: string }
+```
+
+Queries Arc testnet balance directly via RPC.
+
+### Commerce
+
+```
+POST /api/x402/buy
+Body: { query: string, userId?: string }
+Response: {
+  success: boolean,
+  product?: string,
+  txHash?: string,
+  content?: any
+}
+```
+
+Executes autonomous purchase. When `userId` provided, payment originates from user's wallet rather than orchestrator.
+
+```
+GET /api/shop/products
+Response: { products: Product[] }
+```
+
+Lists available digital products with prices and descriptions.
+
+### x402 Facilitator
+
+```
+POST /api/x402/v2/verify
+Body: { signature, paymentDetails, signer }
+Response: { valid, signerVerified, networkMatch, notExpired }
+```
+
+Verifies payment signature without settlement.
+
+```
+POST /api/x402/v2/settle
+Body: { signature, paymentDetails, signer, execute: true }
+Response: { success, txHash, blockNumber, settlementType }
+```
+
+Verifies and executes on-chain settlement.
+
+### Gated Content
+
+```
+GET /api/gated/:product
+Headers: X-402-Payment: <base64-encoded-payment>
+Response: Product content or 402 with payment requirements
+```
+
+## Environment Configuration
 
 ```env
-WALLET_SECRET=your-secret-for-wallet-derivation
+# Arc Testnet RPC
+ARC_RPC_URL=https://rpc.testnet.arc.network
+
+# Circle Developer-Controlled Wallets
+CIRCLE_API_KEY=your_api_key
+CIRCLE_ENTITY_SECRET=your_entity_secret
+CIRCLE_WALLET_SET_ID=your_wallet_set_id
+
+# Orchestrator (agent's payment wallet)
+ORCHESTRATOR_PRIVATE_KEY=0x...
+
+# LLM for agent reasoning (optional, defaults to Groq)
+GROQ_API_KEY=your_groq_key
 ```
 
-## API Endpoints
+## Running Locally
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/x402/products?id=X` | GET | Get product (returns 402 or 200) |
-| `/api/shop/pay` | POST | Execute USDC payment |
-| `/api/arc-wallet` | POST | Get/create wallet for user |
-| `/api/products` | GET | List all products |
-
-### x402 Headers
-
-**Request (after payment):**
-```
-X-Payment-TxHash: 0x123abc...
+```bash
+npm install
+npm run dev
+# Server: http://localhost:3001
 ```
 
-**Response (402):**
-```
-X-Payment-Required: true
-X-Payment-Amount: 1.00
-X-Payment-Currency: USDC
-X-Payment-Network: arc-testnet
-X-Payment-ChainId: 5042002
-X-Payment-Address: 0x000...dEaD
-X-Payment-Token: 0x360...000
-X-402-Version: 1.0
-```
+## Technical Stack
 
-## Links
+| Component | Technology |
+|-----------|------------|
+| Runtime | Node.js + TypeScript |
+| Server | Express.js |
+| Blockchain | ethers.js v6 |
+| Wallets | Circle Web3 Services SDK |
+| LLM | Groq (llama-3.3-70b) |
+| Signatures | EIP-712 via ethers |
 
-- [Live Demo](https://arc-agentic.vercel.app)
-- [GitHub Repo](https://github.com/edwardtay/arc-shopper)
-- [Arc Testnet Explorer](https://testnet.arcscan.app)
-- [Circle Faucet](https://faucet.circle.com) - Get testnet USDC
-- [x402 Protocol](https://www.x402.org)
-- [Coinbase x402](https://github.com/coinbase/x402)
+## Network Details
 
-## Hackathon: Best Trustless AI Agent
+- **Chain**: Arc Testnet
+- **Chain ID**: 5042002
+- **RPC**: `https://rpc.testnet.arc.network`
+- **Explorer**: [testnet.arcscan.app](https://testnet.arcscan.app)
+- **Faucet**: [faucet.circle.com](https://faucet.circle.com)
 
-| Criteria | Implementation |
-|----------|---------------|
-| **Identity** | Deterministic wallets from email |
-| **Payments** | Real USDC on Arc testnet |
-| **Protocol** | x402 (HTTP 402 Payment Required) |
-| **Gating** | Content unlocked after payment verification |
-| **Verification** | On-chain transaction receipt check |
+## References
+
+- [x402 Protocol Specification](https://www.x402.org)
+- [EIP-712: Typed Structured Data Hashing and Signing](https://eips.ethereum.org/EIPS/eip-712)
+- [Circle Developer-Controlled Wallets](https://developers.circle.com/w3s/developer-controlled-wallets-quickstart)
 
 ## License
 

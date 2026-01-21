@@ -5,429 +5,401 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ArcShopper</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
     :root {
-      --bg: #09090b;
-      --surface: #18181b;
-      --border: #27272a;
-      --text: #ffffff;
-      --text-2: #a1a1aa;
-      --accent: #8b5cf6;
-      --success: #10b981;
-      --circle: #00d395;
+      --bg: #0c0c0c;
+      --surface: #161616;
+      --surface-2: #1e1e1e;
+      --border: #2a2a2a;
+      --text: #fafafa;
+      --text-2: #ccc;
+      --text-3: #999;
+      --accent: #fff;
+      --success: #4ade80;
+      --success-dim: rgba(74, 222, 128, 0.1);
     }
+
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'DM Sans', -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* Subtle grain texture */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.03;
+      pointer-events: none;
+      z-index: 0;
     }
 
     /* Header */
     header {
-      padding: 16px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border);
-    }
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      font-size: 18px;
-    }
-    .logo-icon {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, var(--accent), #6366f1);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .logo-icon i { width: 20px; height: 20px; color: white; }
-    .signin-btn {
-      padding: 10px 20px;
-      background: var(--circle);
-      border: none;
-      border-radius: 10px;
-      color: #000;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .signin-btn:hover { opacity: 0.9; }
-    .signin-btn i { width: 18px; height: 18px; }
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .user-email {
-      font-size: 13px;
-      color: var(--text);
-      background: var(--surface);
-      padding: 8px 14px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .user-email i { width: 14px; height: 14px; color: var(--circle); }
-    .signout-btn {
-      background: none;
-      border: none;
-      color: var(--text-2);
-      cursor: pointer;
-      padding: 8px;
-      border-radius: 6px;
-    }
-    .signout-btn:hover { background: var(--surface); color: #ef4444; }
-    .signout-btn i { width: 16px; height: 16px; }
-
-    /* Wallet Card */
-    .wallet-card {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 24px;
-    }
-    .wallet-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-    .wallet-label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      color: var(--text-2);
-    }
-    .wallet-label i { width: 16px; height: 16px; color: var(--circle); }
-    .powered-by {
-      font-size: 11px;
-      color: var(--text-2);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .powered-by span { color: var(--circle); font-weight: 600; }
-    .wallet-address {
-      font-family: monospace;
-      font-size: 14px;
-      color: var(--text);
-      background: rgba(255,255,255,0.05);
-      padding: 10px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-    .wallet-address:hover { background: rgba(255,255,255,0.1); }
-    .wallet-address i { width: 14px; height: 14px; color: var(--text-2); }
-    .wallet-balance {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .balance-display {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-    }
-    .balance-amount {
-      font-size: 32px;
-      font-weight: 700;
-      color: var(--success);
-    }
-    .balance-currency {
-      font-size: 14px;
-      color: var(--text-2);
-    }
-    .fund-btn {
-      padding: 10px 20px;
-      background: var(--accent);
-      border: none;
-      border-radius: 8px;
-      color: white;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .fund-btn:hover { opacity: 0.9; }
-    .fund-btn i { width: 16px; height: 16px; }
-    .refresh-btn {
-      background: none;
-      border: none;
-      color: var(--text-2);
-      cursor: pointer;
-      padding: 4px;
-      margin-left: 8px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-    }
-    .refresh-btn:hover { color: var(--circle); background: rgba(255,255,255,0.1); }
-    .refresh-btn i { width: 16px; height: 16px; }
-    .refresh-btn.spinning i { animation: spin 1s linear infinite; }
-    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-    /* Sign In Modal */
-    .modal-overlay {
-      display: none;
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.8);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-overlay.active { display: flex; }
-    .modal {
-      background: var(--surface);
-      border-radius: 16px;
-      padding: 32px;
-      width: 100%;
-      max-width: 400px;
-      margin: 20px;
-    }
-    .modal-title {
-      font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      text-align: center;
-    }
-    .modal-subtitle {
-      color: var(--text-2);
-      text-align: center;
-      margin-bottom: 24px;
-      font-size: 14px;
-    }
-    .input-group {
-      margin-bottom: 16px;
-    }
-    .input-group label {
-      display: block;
-      font-size: 13px;
-      color: var(--text-2);
-      margin-bottom: 6px;
-    }
-    .input-group input {
-      width: 100%;
-      padding: 14px 16px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
-      font-size: 16px;
-    }
-    .input-group input:focus {
-      outline: none;
-      border-color: var(--circle);
-    }
-    .modal-btn {
-      width: 100%;
-      padding: 14px;
-      background: var(--circle);
-      border: none;
-      border-radius: 10px;
-      color: #000;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 8px;
-    }
-    .modal-btn:hover { opacity: 0.9; }
-    .modal-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .modal-footer {
-      text-align: center;
-      margin-top: 16px;
-      font-size: 12px;
-      color: var(--text-2);
-    }
-    .modal-footer a { color: var(--circle); }
-
-    /* Main */
-    main {
-      max-width: 700px;
-      margin: 0 auto;
-      padding: 40px 24px;
-    }
-    h1 {
-      font-size: 32px;
-      font-weight: 700;
-      text-align: center;
-      margin-bottom: 8px;
-    }
-    .subtitle {
-      text-align: center;
-      color: var(--text-2);
-      margin-bottom: 32px;
-    }
-
-    /* Search */
-    .search-box {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .search-input {
-      flex: 1;
-      padding: 16px 20px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: var(--text);
-      font-size: 16px;
-    }
-    .search-input:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
-    .search-btn {
-      padding: 16px 28px;
-      background: var(--accent);
-      border: none;
-      border-radius: 12px;
-      color: white;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
+      z-index: 100;
+      padding: 20px 32px;
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
-    .search-btn:hover { opacity: 0.9; }
-    .search-btn:disabled { opacity: 0.5; }
-    .search-btn i { width: 20px; height: 20px; }
-
-    /* Quick buttons */
-    .quick-btns {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 40px;
-    }
-    .quick-btn {
-      padding: 10px 16px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      font-size: 14px;
-      cursor: pointer;
-    }
-    .quick-btn:hover { border-color: var(--accent); }
-
-    /* Results */
-    .result {
-      background: var(--surface);
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 24px;
-    }
-    .result-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-      padding-bottom: 16px;
+      justify-content: space-between;
+      background: rgba(12, 12, 12, 0.8);
+      backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
     }
-    .result-icon {
-      width: 48px;
-      height: 48px;
-      background: linear-gradient(135deg, var(--accent), var(--success));
-      border-radius: 12px;
+
+    .logo {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-mark {
+      width: 28px;
+      height: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .result-icon i { width: 24px; height: 24px; color: white; }
-    .result-title { font-size: 18px; font-weight: 600; }
-    .result-status {
-      margin-left: auto;
-      padding: 6px 12px;
-      background: rgba(16, 185, 129, 0.15);
-      color: var(--success);
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-    .result-status.error {
-      background: rgba(239, 68, 68, 0.15);
-      color: #ef4444;
+
+    .logo-mark svg {
+      width: 28px;
+      height: 28px;
     }
 
-    /* Product card */
-    .product {
+    .header-right {
       display: flex;
       align-items: center;
       gap: 16px;
-      padding: 16px;
-      background: var(--bg);
-      border-radius: 12px;
-      margin-bottom: 16px;
     }
-    .product-icon {
-      width: 56px;
-      height: 56px;
+
+    .wallet-menu {
+      position: relative;
+    }
+
+    .balance-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
       background: var(--surface);
-      border-radius: 12px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .balance-pill:hover {
+      border-color: var(--text-3);
+    }
+
+    .balance-pill .amount {
+      color: var(--success);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .wallet-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 280px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px);
+      transition: all 0.2s;
+      z-index: 100;
+    }
+
+    .wallet-dropdown.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .wallet-dropdown-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .refresh-btn {
+      padding: 6px;
+      background: transparent;
+      border: none;
+      color: var(--text-2);
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .refresh-btn:hover {
+      color: var(--text);
+      background: var(--surface-2);
+    }
+
+    .refresh-btn.spinning i {
+      animation: spin 0.8s linear infinite;
+    }
+
+    .wallet-address-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      background: var(--surface-2);
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+
+    .wallet-address {
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+    }
+
+    .copy-btn {
+      padding: 6px;
+      background: transparent;
+      border: none;
+      color: var(--text-2);
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      color: var(--text);
+      background: var(--surface);
+    }
+
+    .wallet-full-address {
+      padding: 10px;
+      background: var(--surface-2);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+
+    .wallet-full-address code {
+      font-size: 11px;
+      color: var(--text-2);
+      word-break: break-all;
+    }
+
+    .fund-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      color: var(--success);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 10px;
+      transition: all 0.2s;
+    }
+
+    .fund-link:hover {
+      background: var(--success-dim);
+    }
+
+    .signout-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      border: none;
+      color: var(--text-2);
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: all 0.2s;
+    }
+
+    .signout-link:hover {
+      background: var(--surface-2);
+      color: var(--text);
+    }
+
+    .avatar-btn {
+      width: 36px;
+      height: 36px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--text-2);
-    }
-    .product-icon i { width: 24px; height: 24px; }
-    .product-info { flex: 1; }
-    .product-name { font-weight: 600; margin-bottom: 4px; }
-    .product-desc { font-size: 14px; color: var(--text-2); }
-    .product-price {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--success);
+      transition: all 0.2s;
     }
 
-    /* Order details */
-    .order-row {
+    .avatar-btn:hover {
+      border-color: var(--text-2);
+      color: var(--text);
+    }
+
+    .sign-in-btn {
+      padding: 10px 20px;
+      background: var(--text);
+      border: none;
+      border-radius: 100px;
+      color: var(--bg);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .sign-in-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    /* Main */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 140px 24px 80px;
+      min-height: 100vh;
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      font-weight: 600;
+      letter-spacing: -2px;
+      margin-bottom: 12px;
+      background: linear-gradient(180deg, #fff 0%, #888 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 16px;
+      color: var(--text-2);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    /* Search */
+    .search-container {
+      margin-bottom: 24px;
+    }
+
+    .search-box {
       display: flex;
-      justify-content: space-between;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border);
+      gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 8px;
+      transition: all 0.2s;
     }
-    .order-row:last-child { border-bottom: none; }
-    .order-label { color: var(--text-2); }
-    .order-value { font-weight: 500; }
-    .order-value.success { color: var(--success); }
-    .order-value a { color: var(--accent); text-decoration: none; }
-    .order-value a:hover { text-decoration: underline; }
 
-    /* Empty state */
-    .empty {
+    .search-box:focus-within {
+      border-color: var(--text-3);
+      box-shadow: 0 0 0 4px rgba(255,255,255,0.05);
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 12px 16px;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 16px;
+      font-family: inherit;
+    }
+
+    .search-input:focus { outline: none; }
+    .search-input::placeholder { color: var(--text-3); }
+
+    .search-btn {
+      padding: 12px 24px;
+      background: var(--text);
+      border: none;
+      border-radius: 10px;
+      color: var(--bg);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .search-btn:hover { opacity: 0.9; }
+    .search-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .search-btn i { width: 18px; height: 18px; }
+
+    /* Quick picks */
+    .quick-picks {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .quick-pick {
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      color: var(--text-2);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .quick-pick:hover {
+      border-color: var(--text-2);
+      color: var(--text);
+    }
+
+    /* Results */
+    .results {
+      margin-top: 40px;
+    }
+
+    .empty-state {
       text-align: center;
       padding: 60px 20px;
-      color: var(--text-2);
     }
+
     .empty-icon {
       width: 64px;
       height: 64px;
@@ -437,198 +409,549 @@
       align-items: center;
       justify-content: center;
       margin: 0 auto 16px;
+      color: var(--text-3);
     }
-    .empty-icon i { width: 28px; height: 28px; }
 
-    /* Loading */
-    .loading {
-      width: 20px;
-      height: 20px;
-      border: 2px solid var(--border);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
+    .empty-state p {
+      color: var(--text-3);
+      font-size: 14px;
     }
+
+    /* Result card */
+    .result-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      animation: slideUp 0.4s ease;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-header {
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .result-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--success-dim);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--success);
+    }
+
+    .result-title {
+      flex: 1;
+    }
+
+    .result-title h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .result-title p {
+      font-size: 13px;
+      color: var(--text-2);
+    }
+
+    .result-status {
+      padding: 6px 12px;
+      background: var(--success-dim);
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--success);
+    }
+
+    .result-body {
+      padding: 24px;
+    }
+
+    /* Product in result */
+    .product-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: var(--surface-2);
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .product-emoji {
+      font-size: 32px;
+    }
+
+    .product-info { flex: 1; }
+
+    .product-name {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .product-desc {
+      font-size: 13px;
+      color: var(--text-2);
+    }
+
+    .product-price {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--success);
+      font-family: 'DM Mono', monospace;
+    }
+
+    /* Content unlocked */
+    .content-unlocked {
+      background: var(--success-dim);
+      border: 1px solid rgba(74, 222, 128, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .content-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-weight: 600;
+      color: var(--success);
+    }
+
+    .content-header i { width: 18px; height: 18px; }
+
+    .content-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .content-item i {
+      width: 14px;
+      height: 14px;
+      color: var(--success);
+    }
+
+    .content-key {
+      margin-top: 12px;
+      padding: 12px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      word-break: break-all;
+      color: var(--text-2);
+    }
+
+    /* Details toggle */
+    .details-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-2);
+      font-size: 13px;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.2s;
+    }
+
+    .details-toggle:hover {
+      border-color: var(--text-3);
+      color: var(--text);
+    }
+
+    .details-toggle i { width: 16px; height: 16px; }
+
+    .details-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .details-content.open {
+      max-height: 400px;
+      margin-top: 16px;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    .detail-row:last-child { border-bottom: none; }
+
+    .detail-label { color: var(--text-2); }
+
+    .detail-value {
+      font-family: 'DM Mono', monospace;
+      color: var(--text);
+    }
+
+    .detail-value a {
+      color: var(--success);
+      text-decoration: none;
+    }
+
+    .detail-value a:hover { text-decoration: underline; }
+
+    /* Processing state */
+    .processing {
+      text-align: center;
+      padding: 48px 24px;
+    }
+
+    .processing-spinner {
+      width: 48px;
+      height: 48px;
+      border: 2px solid var(--border);
+      border-top-color: var(--text);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 20px;
+    }
+
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* History */
-    .history {
-      margin-top: 40px;
-    }
-    .history-title {
+    .processing-text {
       font-size: 14px;
       color: var(--text-2);
-      margin-bottom: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
     }
+
+    .processing-step {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-3);
+    }
+
+    /* History */
+    .history-section {
+      margin-top: 48px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .history-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
     .history-item {
       display: flex;
       align-items: center;
       gap: 12px;
       padding: 12px 16px;
       background: var(--surface);
-      border-radius: 10px;
+      border-radius: 12px;
       margin-bottom: 8px;
     }
-    .history-item i { width: 16px; height: 16px; color: var(--success); }
-    .history-name { flex: 1; }
-    .history-amount { font-weight: 600; color: var(--success); }
+
+    .history-item i {
+      width: 16px;
+      height: 16px;
+      color: var(--success);
+    }
+
+    .history-name {
+      flex: 1;
+      font-size: 14px;
+    }
+
+    .history-amount {
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      color: var(--success);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 400px;
+      animation: modalIn 0.3s ease;
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-header {
+      padding: 24px 24px 0;
+      text-align: center;
+    }
+
+    .modal-header h2 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .modal-header p {
+      font-size: 14px;
+      color: var(--text-2);
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .input-field {
+      margin-bottom: 16px;
+    }
+
+    .input-field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-2);
+      margin-bottom: 8px;
+    }
+
+    .input-field input {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 16px;
+      font-family: inherit;
+    }
+
+    .input-field input:focus {
+      outline: none;
+      border-color: var(--text-2);
+    }
+
+    .modal-btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--text);
+      border: none;
+      border-radius: 12px;
+      color: var(--bg);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .modal-btn:hover { opacity: 0.9; }
+    .modal-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .modal-footer {
+      text-align: center;
+      padding: 0 24px 24px;
+      font-size: 12px;
+      color: var(--text-3);
+    }
 
     /* Toast */
     .toast {
       position: fixed;
-      bottom: 20px;
+      bottom: 24px;
       left: 50%;
       transform: translateX(-50%);
       background: var(--surface);
       border: 1px solid var(--border);
       padding: 12px 20px;
-      border-radius: 8px;
+      border-radius: 100px;
       font-size: 14px;
       z-index: 1001;
+      animation: toastIn 0.3s ease;
     }
 
-    /* Product select buttons */
-    .product-select-btn {
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* Fund wallet CTA */
+    .fund-cta {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 12px 16px;
+      gap: 12px;
+      padding: 16px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-top: 16px;
+    }
+
+    .fund-cta-icon {
+      width: 40px;
+      height: 40px;
       background: var(--surface);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-2);
+    }
+
+    .fund-cta-text {
+      flex: 1;
+    }
+
+    .fund-cta-text strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    .fund-cta-text span {
+      font-size: 12px;
+      color: var(--text-2);
+    }
+
+    .fund-cta-btn {
+      padding: 8px 16px;
+      background: transparent;
       border: 1px solid var(--border);
       border-radius: 8px;
       color: var(--text);
-      font-size: 14px;
+      font-size: 13px;
+      font-weight: 500;
       cursor: pointer;
-      text-align: left;
+      text-decoration: none;
       transition: all 0.2s;
     }
-    .product-select-btn:hover {
-      border-color: var(--accent);
-      background: rgba(139, 92, 246, 0.1);
+
+    .fund-cta-btn:hover {
+      border-color: var(--text-2);
     }
-    .product-select-btn i { width: 18px; height: 18px; color: var(--accent); }
-    .product-select-btn span {
-      margin-left: auto;
-      color: var(--success);
-      font-weight: 600;
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      header { padding: 16px 20px; }
+      main { padding: 120px 20px 60px; }
+      .hero h1 { font-size: 36px; }
     }
   </style>
 </head>
 <body>
   <header>
     <div class="logo">
-      <div class="logo-icon"><i data-lucide="shopping-bag"></i></div>
-      ArcShopper
+      <div class="logo-mark">
+        <svg viewBox="0 0 32 32">
+          <path d="M6 8 L10 8 L14 22 L26 22" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 12 L28 12 L26 22 L14 22" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>
+          <circle cx="16" cy="27" r="2" fill="#4ade80"/>
+          <circle cx="24" cy="27" r="2" fill="#4ade80"/>
+        </svg>
+      </div>
+      <span>ArcShopper</span>
     </div>
-    <div id="auth-section">
-      <button class="signin-btn" onclick="showSignIn()">
-        <i data-lucide="user"></i> Sign In
-      </button>
+    <div class="header-right" id="header-right">
+      <button class="sign-in-btn" onclick="showSignIn()">Sign in</button>
     </div>
   </header>
+
+  <main>
+    <div class="hero">
+      <h1>Buy anything</h1>
+      <p>Your AI agent handles all your commerce needs.</p>
+      <p style="font-size: 11px; color: var(--text-3); margin-top: 12px;">Demo on Arc Testnet. Not financial advice.</p>
+    </div>
+
+    <div class="search-container">
+      <div class="search-box">
+        <input
+          type="text"
+          class="search-input"
+          id="query"
+          placeholder="e.g. API credits, security report..."
+        />
+        <button class="search-btn" id="buy-btn" onclick="buy()">
+          <i data-lucide="sparkles"></i>
+          Buy
+        </button>
+      </div>
+    </div>
+
+    <div class="quick-picks">
+      <button class="quick-pick" data-product="crypto-api">Crypto API Access</button>
+      <button class="quick-pick" data-product="premium-image">Premium Image</button>
+      <button class="quick-pick" data-product="trend-report">Trend Report</button>
+      <button class="quick-pick" data-product="arc-course">Arc Crash Course</button>
+    </div>
+
+    <div class="results" id="results">
+      <div class="empty-state">
+        <div class="empty-icon"><i data-lucide="package"></i></div>
+        <p>Search for something to get started</p>
+      </div>
+    </div>
+
+    <div class="history-section" id="history-section" style="display: none;">
+      <div class="history-title">Recent Purchases</div>
+      <div id="history-list"></div>
+    </div>
+  </main>
 
   <!-- Sign In Modal -->
   <div class="modal-overlay" id="signin-modal">
     <div class="modal">
-      <h2 class="modal-title">Welcome to ArcShopper</h2>
-      <p class="modal-subtitle">Sign in with your email to start shopping</p>
-      <div class="input-group">
-        <label>Email Address</label>
-        <input type="email" id="email-input" placeholder="you@example.com" />
+      <div class="modal-header">
+        <h2>Welcome</h2>
+        <p>Enter your email to get started</p>
       </div>
-      <button class="modal-btn" id="signin-submit" onclick="signIn()">
-        Continue
-      </button>
-      <p class="modal-footer">
-        Powered by <a href="https://www.circle.com/programmable-wallets" target="_blank">Circle</a> Programmable Wallets
-      </p>
+      <div class="modal-body">
+        <div class="input-field">
+          <label>Email</label>
+          <input type="email" id="email-input" placeholder="you@example.com" />
+        </div>
+        <button class="modal-btn" id="signin-submit" onclick="signIn()">Continue</button>
+      </div>
+      <div class="modal-footer">
+        A wallet will be created for you automatically
+      </div>
     </div>
   </div>
-
-  <main>
-    <div id="wallet-card" style="display: none;">
-      <div class="wallet-card">
-        <div class="wallet-header">
-          <div class="wallet-label">
-            <i data-lucide="wallet"></i>
-            Your Shopping Wallet
-          </div>
-          <div class="powered-by">
-            <span style="color: var(--circle);">Arc Testnet</span> · <span>Circle</span>
-          </div>
-        </div>
-        <div class="wallet-address" onclick="copyAddress()" id="wallet-address">
-          <span>Loading...</span>
-          <i data-lucide="copy"></i>
-        </div>
-        <div class="wallet-balance">
-          <div class="balance-display">
-            <span class="balance-amount" id="wallet-balance">$0.0</span>
-            <span class="balance-currency">USDC</span>
-            <button class="refresh-btn" onclick="refreshBalance()" title="Refresh balance">
-              <i data-lucide="refresh-cw" id="refresh-icon"></i>
-            </button>
-          </div>
-          <a href="https://faucet.circle.com" target="_blank" class="fund-btn" style="text-decoration: none;">
-            <i data-lucide="plus"></i> Get Testnet USDC
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <h1>What do you want to buy?</h1>
-    <p class="subtitle">AI agent finds the best deal and pays with USDC via <strong style="color: var(--accent);">x402</strong> on <strong style="color: var(--circle);">Arc Testnet</strong></p>
-
-    <div class="search-box">
-      <input class="search-input" id="query" placeholder="e.g. Buy API credits under $5" />
-      <button class="search-btn" id="buy-btn" onclick="buy()">
-        <i data-lucide="sparkles"></i> Buy
-      </button>
-    </div>
-
-    <div class="quick-btns">
-      <button class="quick-btn" data-q="api-key" data-product="api-key">API Key ($0.50)</button>
-      <button class="quick-btn" data-q="premium-report" data-product="premium-report">Security Report ($1)</button>
-      <button class="quick-btn" data-q="code-template" data-product="code-template">Code Template ($2)</button>
-      <button class="quick-btn" data-q="ai-credits" data-product="ai-credits">AI Credits ($1.50)</button>
-      <button class="quick-btn" data-q="solidity-course" data-product="solidity-course">Solidity Course ($1)</button>
-    </div>
-
-    <div id="results">
-      <div class="empty">
-        <div class="empty-icon"><i data-lucide="shopping-bag"></i></div>
-        <p>Tell me what you need and I'll find it for you</p>
-      </div>
-    </div>
-
-    <div class="history" id="history" style="display: none;">
-      <div class="history-title">Purchase History (with EIP-712 Receipts)</div>
-      <div id="history-list"></div>
-    </div>
-
-    <div class="credits-section" id="credits-section" style="display: none; margin-top: 24px;">
-      <div style="background: var(--surface); border-radius: 12px; padding: 20px; border: 1px solid var(--border);">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <i data-lucide="zap" style="width: 20px; height: 20px; color: #ec4899;"></i>
-            <span style="font-weight: 600;">Streaming Credits</span>
-          </div>
-          <span id="credit-balance" style="font-size: 20px; font-weight: 700; color: #ec4899;">0 credits</span>
-        </div>
-        <p style="font-size: 13px; color: var(--text-2); margin-bottom: 12px;">Pay-per-use API access. Buy credits and use them for AI image generation.</p>
-        <div style="display: flex; gap: 8px;">
-          <button onclick="buyCredits(100)" style="flex: 1; padding: 10px; background: rgba(236, 72, 153, 0.2); border: 1px solid #ec4899; border-radius: 8px; color: #ec4899; font-size: 13px; cursor: pointer;">
-            Buy 100 ($1.50)
-          </button>
-          <button onclick="buyCredits(500)" style="flex: 1; padding: 10px; background: rgba(236, 72, 153, 0.2); border: 1px solid #ec4899; border-radius: 8px; color: #ec4899; font-size: 13px; cursor: pointer;">
-            Buy 500 ($7.50)
-          </button>
-        </div>
-      </div>
-    </div>
-  </main>
 
   <script>
     const API = '/api';
@@ -637,26 +960,142 @@
     let isSignedIn = false;
     let userEmail = null;
     let walletAddress = null;
-    let walletId = null;
+    let walletBalance = '0';
 
     lucide.createIcons();
 
-    // Show sign in modal
+    // UI Functions
     function showSignIn() {
       document.getElementById('signin-modal').classList.add('active');
       document.getElementById('email-input').focus();
     }
 
-    // Hide sign in modal
     function hideSignIn() {
       document.getElementById('signin-modal').classList.remove('active');
     }
 
-    // Sign in with email
+    function showToast(msg) {
+      const existing = document.querySelector('.toast');
+      if (existing) existing.remove();
+
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    function updateHeader() {
+      const headerRight = document.getElementById('header-right');
+
+      if (isSignedIn && userEmail) {
+        headerRight.innerHTML = `
+          <div class="wallet-menu">
+            <button class="balance-pill" onclick="toggleWalletMenu()">
+              <span class="amount">$${parseFloat(walletBalance).toFixed(2)}</span>
+              <span style="color: var(--text-3)">USDC</span>
+              <i data-lucide="chevron-down" style="width:14px;height:14px;margin-left:4px;color:var(--text-3)"></i>
+            </button>
+            <div class="wallet-dropdown" id="wallet-dropdown">
+              <div class="wallet-dropdown-header">
+                <span style="color:var(--text-2);font-size:12px;">Your Wallet</span>
+                <button class="refresh-btn" onclick="refreshBalance(event)" title="Refresh balance">
+                  <i data-lucide="refresh-cw" style="width:14px;height:14px"></i>
+                </button>
+              </div>
+              <div class="wallet-address-row">
+                <span class="wallet-address">${walletAddress.slice(0,6)}...${walletAddress.slice(-4)}</span>
+                <button class="copy-btn" onclick="copyAddress(event)">
+                  <i data-lucide="copy" style="width:14px;height:14px"></i>
+                </button>
+              </div>
+              <div class="wallet-full-address" id="full-address" style="display:none;">
+                <code>${walletAddress}</code>
+              </div>
+              <a href="https://faucet.circle.com" target="_blank" class="fund-link">
+                <i data-lucide="plus-circle" style="width:16px;height:16px"></i>
+                Get testnet USDC
+              </a>
+              <button class="signout-link" onclick="signOut()">
+                <i data-lucide="log-out" style="width:16px;height:16px"></i>
+                Sign out
+              </button>
+            </div>
+          </div>
+        `;
+      } else {
+        headerRight.innerHTML = `
+          <button class="sign-in-btn" onclick="showSignIn()">Sign in</button>
+        `;
+      }
+      lucide.createIcons();
+    }
+
+    function toggleWalletMenu() {
+      const dropdown = document.getElementById('wallet-dropdown');
+      dropdown.classList.toggle('open');
+    }
+
+    function copyAddress(e) {
+      e.stopPropagation();
+      navigator.clipboard.writeText(walletAddress);
+      showToast('Address copied!');
+      // Show full address briefly
+      const full = document.getElementById('full-address');
+      full.style.display = 'block';
+      setTimeout(() => full.style.display = 'none', 3000);
+    }
+
+    async function refreshBalance(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      const btn = e.currentTarget;
+      btn.classList.add('spinning');
+
+      try {
+        if (!walletAddress) {
+          showToast('No wallet connected');
+          return;
+        }
+
+        // Use simple balance endpoint (no Circle API needed)
+        const res = await fetch(API + '/balance/' + walletAddress);
+        const data = await res.json();
+
+        if (data.success) {
+          walletBalance = data.balance?.usdc || '0';
+
+          // Update balance display directly
+          const amountEl = document.querySelector('.wallet-btn .amount');
+          if (amountEl) {
+            amountEl.textContent = '$' + parseFloat(walletBalance).toFixed(2);
+          }
+
+          showToast('Balance: $' + parseFloat(walletBalance).toFixed(2));
+        } else {
+          showToast('Failed to refresh');
+        }
+      } catch (err) {
+        console.error('Refresh error:', err);
+        showToast('Failed to refresh');
+      } finally {
+        btn.classList.remove('spinning');
+      }
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('wallet-dropdown');
+      if (dropdown && !e.target.closest('.wallet-menu')) {
+        dropdown.classList.remove('open');
+      }
+    });
+
+    // Auth Functions
     async function signIn() {
       const email = document.getElementById('email-input').value.trim();
       if (!email || !email.includes('@')) {
-        alert('Please enter a valid email address');
+        showToast('Please enter a valid email');
         return;
       }
 
@@ -665,756 +1104,302 @@
       btn.textContent = 'Creating wallet...';
 
       try {
-        // Create/get Arc wallet for this email (real on-chain wallet)
-        const res = await fetch(API + '/arc-wallet', {
+        const res = await fetch(API + '/circle/wallet', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId: email })
         });
         const data = await res.json();
 
-        if (data.success || data.address) {
+        if (data.walletAddress) {
           userEmail = email;
-          walletAddress = data.address;
-          walletId = email; // Use email as ID for Arc wallets
+          walletAddress = data.walletAddress;
+          walletBalance = data.balance?.usdc || '0';
           isSignedIn = true;
 
-          // Save to localStorage
-          localStorage.setItem('arcshopper_email', email);
-          localStorage.setItem('arcshopper_wallet', walletAddress);
-          localStorage.setItem('arcshopper_walletId', email);
+          localStorage.setItem('arc_email', email);
+          localStorage.setItem('arc_wallet', walletAddress);
 
           hideSignIn();
-          updateUI();
-          loadBalance();
+          updateHeader();
           loadHistory();
+          showToast('Welcome to ArcShopper');
         } else {
           throw new Error(data.error || 'Failed to create wallet');
         }
       } catch (e) {
-        alert('Sign in failed: ' + e.message);
+        showToast('Error: ' + e.message);
       } finally {
         btn.disabled = false;
         btn.textContent = 'Continue';
       }
     }
 
-    // Sign out
     function signOut() {
       isSignedIn = false;
       userEmail = null;
       walletAddress = null;
-      walletId = null;
-      localStorage.removeItem('arcshopper_email');
-      localStorage.removeItem('arcshopper_wallet');
-      localStorage.removeItem('arcshopper_walletId');
-      updateUI();
+      walletBalance = '0';
+      localStorage.removeItem('arc_email');
+      localStorage.removeItem('arc_wallet');
+      updateHeader();
+      document.getElementById('history-section').style.display = 'none';
+      showToast('Signed out');
     }
 
-    // Update UI based on auth state
-    function updateUI() {
-      const authSection = document.getElementById('auth-section');
-      const walletCard = document.getElementById('wallet-card');
-
-      if (isSignedIn && userEmail) {
-        authSection.innerHTML = `
-          <div class="user-info">
-            <div class="user-email">
-              <i data-lucide="check-circle"></i>
-              ${userEmail}
-            </div>
-            <button class="signout-btn" onclick="signOut()" title="Sign Out">
-              <i data-lucide="log-out"></i>
-            </button>
-          </div>
-        `;
-        walletCard.style.display = 'block';
-
-        if (walletAddress) {
-          const short = walletAddress.slice(0, 8) + '...' + walletAddress.slice(-6);
-          document.getElementById('wallet-address').innerHTML = `
-            <span>${short}</span>
-            <i data-lucide="copy"></i>
-          `;
-        }
-      } else {
-        authSection.innerHTML = `
-          <button class="signin-btn" onclick="showSignIn()">
-            <i data-lucide="user"></i> Sign In
-          </button>
-        `;
-        walletCard.style.display = 'none';
-      }
-
-      lucide.createIcons();
-    }
-
-    // Copy wallet address
-    function copyAddress() {
-      if (walletAddress) {
-        navigator.clipboard.writeText(walletAddress);
-        showToast('Wallet address copied!');
-      }
-    }
-
-    function copyAddressForFunding() {
-      if (walletAddress) {
-        navigator.clipboard.writeText(walletAddress);
-        showToast('Address copied! Send USDC on Arc testnet to fund your wallet.');
-      }
-    }
-
-    // Load wallet balance from Arc testnet
+    // Balance
     async function loadBalance() {
       if (!userEmail) return;
       try {
-        const res = await fetch(API + '/arc-wallet', {
+        const res = await fetch(API + '/circle/wallet', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId: userEmail })
         });
         const data = await res.json();
-        const usdc = parseFloat(data.usdc || '0');
-        document.getElementById('wallet-balance').textContent = '$' + usdc.toFixed(2);
-        // Update wallet address in case it changed
-        if (data.address) walletAddress = data.address;
+        walletBalance = data.balance?.usdc || '0';
+        walletAddress = data.walletAddress || walletAddress;
+        updateHeader();
       } catch (e) {
-        console.error('Failed to load balance:', e);
+        console.error('Balance error:', e);
       }
     }
 
-    // Refresh balance with animation
-    async function refreshBalance() {
-      const btn = document.querySelector('.refresh-btn');
-      btn.classList.add('spinning');
-      await loadBalance();
-      setTimeout(() => btn.classList.remove('spinning'), 500);
-      showToast('Balance updated!');
-    }
-
-    // Load purchase history from x402
+    // History - uses shop orders endpoint
     async function loadHistory() {
-      if (!userEmail) return;
+      if (!isSignedIn) return;
       try {
-        // Get wallet address
-        const walletRes = await fetch(API + '/arc-wallet', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: userEmail })
-        });
-        const walletData = await walletRes.json();
-
-        // Get purchase history
-        const res = await fetch(API + '/x402/history?userId=' + walletData.address);
+        const res = await fetch(API + '/shop/orders');
         const data = await res.json();
 
-        if (data.purchases?.length) {
-          document.getElementById('history').style.display = 'block';
-          document.getElementById('history-list').innerHTML = data.purchases.slice(-5).reverse().map(p => `
+        if (data.orders?.length) {
+          document.getElementById('history-section').style.display = 'block';
+          document.getElementById('history-list').innerHTML = data.orders.slice(-5).reverse().map(o => `
             <div class="history-item">
-              <i data-lucide="shield-check" style="color: var(--success);"></i>
-              <span class="history-name">${p.productName}</span>
-              <span style="font-size: 10px; color: var(--text-2); font-family: monospace;">${p.contentHash?.slice(0,10)}...</span>
-              <span class="history-amount">$${p.amount}</span>
+              <i data-lucide="check-circle"></i>
+              <span class="history-name">${o.items?.[0]?.name || 'Order'}</span>
+              <span class="history-amount">${o.totalAmount}</span>
             </div>
           `).join('');
           lucide.createIcons();
         }
-
-        // Show credits section
-        document.getElementById('credits-section').style.display = 'block';
-        loadCredits();
       } catch (e) {
-        console.error('History load error:', e);
+        console.error('History error:', e);
       }
     }
 
-    // Load streaming credits balance
-    async function loadCredits() {
-      if (!userEmail) return;
-      try {
-        const res = await fetch(API + '/x402/stream?userId=' + userEmail);
-        const data = await res.json();
-        document.getElementById('credit-balance').textContent = data.credits + ' credits';
-      } catch (e) {}
-    }
+    // Product mapping - must match actual marketplace product names
+    const PRODUCTS = {
+      'crypto-api': { name: 'CoinGecko API Access', emoji: '🔑', price: 0.99 },
+      'premium-image': { name: 'Premium Stock Image', emoji: '🖼️', price: 0.50 },
+      'trend-report': { name: 'Crypto Trend Report', emoji: '📊', price: 1.99 },
+      'arc-course': { name: 'Arc Blockchain Course', emoji: '📚', price: 2.99 }
+    };
 
-    // Buy streaming credits
-    async function buyCredits(amount) {
-      if (!isSignedIn) {
-        showSignIn();
-        return;
-      }
-      showToast('Purchasing ' + amount + ' credits...');
-      try {
-        const res = await fetch(API + '/x402/stream', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: userEmail, action: 'buy', credits: amount })
-        });
-        const data = await res.json();
-        if (data.success) {
-          showToast('Purchased ' + amount + ' credits!');
-          loadCredits();
-          loadBalance();
-        } else {
-          showToast('Failed: ' + (data.error || 'Unknown error'));
-        }
-      } catch (e) {
-        showToast('Error: ' + e.message);
-      }
-    }
-
-    // Digital product IDs
-    const DIGITAL_PRODUCTS = ['api-key', 'premium-report', 'code-template', 'ai-credits', 'solidity-course', 'defi-course'];
-
-    // Buy with REAL x402 protocol - actual network requests visible in Network tab
+    // Main buy function
     async function buy() {
       if (!isSignedIn) {
         showSignIn();
         return;
       }
 
-      const query = document.getElementById('query').value;
+      const query = document.getElementById('query').value.trim();
       const btn = document.getElementById('buy-btn');
       const results = document.getElementById('results');
+
       if (!query) return;
 
+      // Show processing
       btn.disabled = true;
-      btn.innerHTML = '<span class="loading"></span>';
-
-      // Check if it's a digital product
-      const queryLower = query.toLowerCase();
-      let productId = DIGITAL_PRODUCTS.find(p => queryLower.includes(p) || queryLower.includes(p.replace('-', ' ')));
-
-      // Map common queries to product IDs
-      if (!productId) {
-        if (queryLower.includes('api') || queryLower.includes('key')) productId = 'api-key';
-        else if (queryLower.includes('report') || queryLower.includes('security') || queryLower.includes('audit')) productId = 'premium-report';
-        else if (queryLower.includes('code') || queryLower.includes('template') || queryLower.includes('kit')) productId = 'code-template';
-        else if (queryLower.includes('ai') || queryLower.includes('image') || queryLower.includes('credit')) productId = 'ai-credits';
-        else if (queryLower.includes('solidity') || queryLower.includes('course') || queryLower.includes('learn')) productId = 'solidity-course';
-        else if (queryLower.includes('defi')) productId = 'defi-course';
-      }
-
-      if (productId) {
-        // REAL x402 FLOW for digital products!
-        results.innerHTML = '<div class="empty"><span class="loading"></span><p style="margin-top:12px">Step 1: Requesting product...</p></div>';
-
-        try {
-          // STEP 1: Make actual x402 request - will return 402
-          const x402Res = await fetch(API + '/x402/products?id=' + productId);
-          const x402Headers = {};
-          x402Res.headers.forEach((v, k) => { if (k.startsWith('x-')) x402Headers[k] = v; });
-
-          if (x402Res.status === 402) {
-            const paymentInfo = await x402Res.json();
-
-            results.innerHTML = '<div class="empty"><span class="loading"></span><p style="margin-top:12px">Step 2: Got 402 - Executing USDC payment...</p></div>';
-
-            // STEP 2: Execute payment via backend
-            const payRes = await fetch(API + '/shop/pay', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                userId: userEmail,
-                amount: paymentInfo.payment.amount,
-                recipient: paymentInfo.payment.recipient
-              })
-            });
-            const payData = await payRes.json();
-
-            if (!payData.success) {
-              throw new Error(payData.error || 'Payment failed');
-            }
-
-            results.innerHTML = '<div class="empty"><span class="loading"></span><p style="margin-top:12px">Step 3: Verifying payment & unlocking content...</p></div>';
-
-            // STEP 3: Retry request with payment proof
-            const retryRes = await fetch(API + '/x402/products?id=' + productId, {
-              headers: { 'X-Payment-TxHash': payData.txHash }
-            });
-            const contentData = await retryRes.json();
-
-            if (retryRes.status === 200 && contentData.success) {
-              // SUCCESS! Show the gated content
-              displayDigitalProduct(contentData, payData, paymentInfo);
-              loadBalance();
-              return;
-            } else {
-              throw new Error(contentData.error || 'Verification failed');
-            }
-          } else {
-            throw new Error('Expected 402 but got ' + x402Res.status);
-          }
-        } catch (e) {
-          results.innerHTML = `<div class="result"><p style="color: #ef4444;">x402 Error: ${e.message}</p></div>`;
-          btn.disabled = false;
-          btn.innerHTML = '<i data-lucide="sparkles"></i> Buy';
-          lucide.createIcons();
-          return;
-        }
-      }
-
-      // Fallback - show available products
-      results.innerHTML = `<div class="result">
-        <p style="color: var(--text-2); margin-bottom: 16px;">Choose a digital product to purchase:</p>
-        <div style="display: grid; gap: 10px;">
-          <button onclick="document.getElementById('query').value='api-key';buy();" class="product-select-btn">
-            <i data-lucide="key"></i> API Key <span>$0.50</span>
-          </button>
-          <button onclick="document.getElementById('query').value='premium-report';buy();" class="product-select-btn">
-            <i data-lucide="file-text"></i> Security Report <span>$1.00</span>
-          </button>
-          <button onclick="document.getElementById('query').value='code-template';buy();" class="product-select-btn">
-            <i data-lucide="code"></i> Code Template <span>$2.00</span>
-          </button>
-          <button onclick="document.getElementById('query').value='ai-credits';buy();" class="product-select-btn">
-            <i data-lucide="image"></i> 100 AI Credits <span>$1.50</span>
-          </button>
-          <button onclick="document.getElementById('query').value='solidity-course';buy();" class="product-select-btn">
-            <i data-lucide="graduation-cap"></i> Solidity Course <span>$1.00</span>
-          </button>
+      results.innerHTML = `
+        <div class="result-card">
+          <div class="processing">
+            <div class="processing-spinner"></div>
+            <div class="processing-text">Processing your order</div>
+            <div class="processing-step" id="step-text">Finding products...</div>
+          </div>
         </div>
-      </div>`;
-      btn.disabled = false;
-      btn.innerHTML = '<i data-lucide="sparkles"></i> Buy';
-      lucide.createIcons();
-      return;
+      `;
 
-      // Legacy flow removed - all products now use x402
       try {
-        const res = await fetch(API + '/shop/buy', {
+        document.getElementById('step-text').textContent = 'Processing purchase...';
+
+        const res = await fetch(API + '/x402/buy', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query, userId: userEmail })
+          body: JSON.stringify({ query: 'Buy ' + query, userId: userEmail })
         });
         const data = await res.json();
 
-        if (data.success && (data.selectedProduct || data.product)) {
-          const p = data.selectedProduct || data.product;
-          const payment = data.payment || {};
-          const content = data.content;
-          const x402Steps = data.x402Steps || [];
-
-          // Build x402 protocol flow visualization
-          let x402FlowHtml = '';
-          if (x402Steps.length > 0) {
-            x402FlowHtml = `
-              <div style="margin-bottom: 20px; padding: 16px; background: var(--bg); border-radius: 12px; border: 1px solid var(--border);">
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-                  <i data-lucide="activity" style="width: 16px; height: 16px; color: var(--accent);"></i>
-                  <span style="font-size: 13px; font-weight: 600; color: var(--accent);">x402 Protocol Flow</span>
-                </div>
-                ${x402Steps.map((step, i) => `
-                  <div style="display: flex; gap: 12px; margin-bottom: ${i < x402Steps.length - 1 ? '8px' : '0'};">
-                    <div style="width: 24px; height: 24px; background: ${step.status === 402 ? 'rgba(251, 191, 36, 0.2)' : step.status === 200 ? 'rgba(16, 185, 129, 0.2)' : 'rgba(139, 92, 246, 0.2)'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                      <span style="font-size: 11px; font-weight: 600; color: ${step.status === 402 ? '#fbbf24' : step.status === 200 ? 'var(--success)' : 'var(--accent)'};">${step.step}</span>
-                    </div>
-                    <div style="flex: 1; min-width: 0;">
-                      <div style="font-size: 12px; color: var(--text); margin-bottom: 2px;">${step.description}</div>
-                      ${step.method ? `<span style="font-size: 10px; padding: 2px 6px; background: rgba(255,255,255,0.1); border-radius: 4px; font-family: monospace;">${step.method}${step.url ? ' ' + step.url : ''}</span>` : ''}
-                      ${step.status ? `<span style="margin-left: 6px; font-size: 10px; padding: 2px 6px; background: ${step.status === 402 ? 'rgba(251, 191, 36, 0.2)' : 'rgba(16, 185, 129, 0.2)'}; border-radius: 4px; color: ${step.status === 402 ? '#fbbf24' : 'var(--success)'};">HTTP ${step.status}</span>` : ''}
-                      ${step.txHash ? `<div style="margin-top: 4px;"><a href="${EXPLORER}/tx/${step.txHash}" target="_blank" style="font-size: 10px; color: var(--accent); font-family: monospace;">${step.txHash.slice(0,16)}...</a></div>` : ''}
-                      ${step.headers ? `<div style="margin-top: 4px; font-size: 10px; color: var(--text-2); font-family: monospace;">${Object.entries(step.headers).slice(0,3).map(([k,v]) => `${k}: ${v}`).join(' · ')}</div>` : ''}
-                    </div>
-                  </div>
-                `).join('')}
-              </div>
-            `;
-          }
-
-          // Build course content if delivered
-          let contentHtml = '';
-          if (content && content.modules) {
-            contentHtml = `
-              <div style="margin-top: 16px; padding: 16px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.3);">
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-                  <i data-lucide="unlock" style="width: 16px; height: 16px; color: var(--success);"></i>
-                  <span style="font-size: 13px; font-weight: 600; color: var(--success);">Content Unlocked</span>
-                </div>
-                <div style="display: grid; gap: 6px;">
-                  ${content.modules.slice(0, 5).map(m => `
-                    <div style="font-size: 12px; color: var(--text); display: flex; align-items: center; gap: 6px;">
-                      <i data-lucide="check-circle" style="width: 12px; height: 12px; color: var(--success);"></i>
-                      ${m}
-                    </div>
-                  `).join('')}
-                  ${content.modules.length > 5 ? `<div style="font-size: 11px; color: var(--text-2);">+ ${content.modules.length - 5} more modules</div>` : ''}
-                </div>
-                ${content.accessUrl ? `<a href="${content.accessUrl}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding: 8px 14px; background: var(--success); color: #000; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none;"><i data-lucide="external-link" style="width: 12px; height: 12px;"></i> Access Course</a>` : ''}
-              </div>
-            `;
-          }
-
-          results.innerHTML = `
-            <div class="result">
-              <div class="result-header">
-                <div class="result-icon"><i data-lucide="check"></i></div>
-                <span class="result-title">Purchase Complete</span>
-                <span class="result-status">Confirmed</span>
-              </div>
-              <div class="product">
-                <div class="product-icon"><i data-lucide="${p.type === 'course' ? 'graduation-cap' : getIcon(p.category)}"></i></div>
-                <div class="product-info">
-                  <div class="product-name">${p.name}</div>
-                  <div class="product-desc">${p.description || ''}</div>
-                </div>
-                <div class="product-price">${p.price}</div>
-              </div>
-              ${x402FlowHtml}
-              <div class="order-row">
-                <span class="order-label">Protocol</span>
-                <span class="order-value" style="color: var(--accent);">x402</span>
-              </div>
-              <div class="order-row">
-                <span class="order-label">Network</span>
-                <span class="order-value" style="color: var(--circle);">Arc Testnet (${payment.chainId || 5042002})</span>
-              </div>
-              <div class="order-row">
-                <span class="order-label">Amount</span>
-                <span class="order-value success">${payment.amount || p.price} USDC</span>
-              </div>
-              ${payment.txHash ? `
-              <div class="order-row">
-                <span class="order-label">Transaction</span>
-                <span class="order-value"><a href="${payment.explorer || EXPLORER + '/tx/' + payment.txHash}" target="_blank">${payment.txHash.slice(0,10)}...${payment.txHash.slice(-6)}</a></span>
-              </div>
-              ` : ''}
-              ${contentHtml}
-              <div style="margin-top: 16px; padding: 10px; background: rgba(139, 92, 246, 0.1); border-radius: 8px; font-size: 11px; color: var(--accent); display: flex; align-items: center; gap: 6px;">
-                <i data-lucide="shield-check" style="width: 14px; height: 14px;"></i>
-                Verified on-chain USDC payment via HTTP 402 Payment Required protocol
-              </div>
-            </div>
-          `;
+        if (data.success && data.order) {
+          displaySuccess(data);
           loadBalance();
-          loadHistory();
+        } else if (!data.approved) {
+          throw new Error(data.message || 'Purchase not approved');
         } else {
-          results.innerHTML = `
-            <div class="result">
-              <div class="result-header">
-                <div class="result-icon" style="background: #ef4444;"><i data-lucide="x"></i></div>
-                <span class="result-title">Could not complete</span>
-                <span class="result-status error">Failed</span>
-              </div>
-              <p style="color: var(--text-2); padding: 16px 0;">${data.message || 'No matching products found'}</p>
-              ${data.suggestion ? `<p style="color: var(--accent); font-size: 13px;">${data.suggestion}</p>` : ''}
-            </div>
-          `;
+          throw new Error(data.error || data.message || 'Purchase failed');
         }
-        lucide.createIcons();
       } catch (e) {
-        results.innerHTML = `<div class="result"><p style="color: #ef4444;">Error: ${e.message}</p></div>`;
+        results.innerHTML = `
+          <div class="result-card">
+            <div class="result-body" style="text-align: center; padding: 32px;">
+              <div style="color: #f87171; margin-bottom: 12px;">
+                <i data-lucide="alert-circle" style="width: 32px; height: 32px;"></i>
+              </div>
+              <p style="color: var(--text); margin-bottom: 8px;">Something went wrong</p>
+              <p style="color: var(--text-2); font-size: 13px;">${e.message}</p>
+              ${e.message.toLowerCase().includes('insufficient') || e.message.toLowerCase().includes('balance') ? `
+                <div class="fund-cta">
+                  <div class="fund-cta-icon"><i data-lucide="wallet"></i></div>
+                  <div class="fund-cta-text">
+                    <strong>Need funds?</strong>
+                    <span>Get testnet USDC to continue</span>
+                  </div>
+                  <a href="https://faucet.circle.com" target="_blank" class="fund-cta-btn">Get USDC</a>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+        lucide.createIcons();
       } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i data-lucide="sparkles"></i> Buy';
+      }
+    }
+
+    function quickBuy(productId) {
+      document.getElementById('query').value = PRODUCTS[productId]?.name || productId;
+      buy();
+    }
+
+    function displaySuccess(data) {
+      const results = document.getElementById('results');
+      const product = data.selectedProduct;
+      const order = data.order;
+      const txHash = order.txHash; // No fake - require real tx
+
+      if (!txHash) {
+        // No real transaction - show error
+        results.innerHTML = `
+          <div class="result-card" style="border-color: #f87171;">
+            <div class="result-header">
+              <div class="result-icon" style="background: rgba(248, 113, 113, 0.1);"><i data-lucide="alert-triangle" style="color: #f87171;"></i></div>
+              <div class="result-title">
+                <h3 style="color: #f87171;">Payment Not Executed</h3>
+                <p>No blockchain transaction was made</p>
+              </div>
+            </div>
+            <div class="result-body">
+              <p style="color: var(--text-2);">The x402 payment failed to execute on-chain. Check server logs for details.</p>
+            </div>
+          </div>
+        `;
         lucide.createIcons();
-      }
-    }
-
-    // Display unlocked digital product content
-    function displayDigitalProduct(contentData, payData, paymentInfo) {
-      const results = document.getElementById('results');
-      const btn = document.getElementById('buy-btn');
-      const p = contentData.product;
-      const content = contentData.content;
-
-      // Build content-specific display
-      let contentHtml = '';
-      if (content.type === 'api-key') {
-        contentHtml = `
-          <div style="padding: 16px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.3);">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-              <i data-lucide="key" style="width: 18px; height: 18px; color: var(--success);"></i>
-              <span style="font-weight: 600; color: var(--success);">API Key Generated</span>
-            </div>
-            <div style="background: var(--bg); padding: 12px; border-radius: 8px; font-family: monospace; font-size: 13px; word-break: break-all; margin-bottom: 12px;">
-              ${content.apiKey}
-            </div>
-            <div style="font-size: 12px; color: var(--text-2);">
-              <div>Rate Limit: ${content.rateLimit}</div>
-              <div>Expires: ${new Date(content.expiresAt).toLocaleDateString()}</div>
-              <div>Endpoints: ${content.endpoints.join(', ')}</div>
-            </div>
-          </div>
-        `;
-      } else if (content.type === 'report') {
-        contentHtml = `
-          <div style="padding: 16px; background: rgba(139, 92, 246, 0.1); border-radius: 12px; border: 1px solid rgba(139, 92, 246, 0.3);">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-              <i data-lucide="file-text" style="width: 18px; height: 18px; color: var(--accent);"></i>
-              <span style="font-weight: 600; color: var(--accent);">${content.title}</span>
-            </div>
-            <div style="display: grid; gap: 6px; margin-bottom: 12px;">
-              ${content.sections.map(s => `<div style="font-size: 12px; display: flex; gap: 6px;"><i data-lucide="check" style="width: 12px; height: 12px; color: var(--success); flex-shrink: 0;"></i>${s}</div>`).join('')}
-            </div>
-            <div style="font-size: 11px; color: var(--text-2); margin-bottom: 8px;">Access Token: ${content.accessToken}</div>
-            <a href="${content.downloadUrl}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: var(--accent); color: white; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none;">
-              <i data-lucide="download" style="width: 14px; height: 14px;"></i> Download Report
-            </a>
-          </div>
-        `;
-      } else if (content.type === 'code-template') {
-        contentHtml = `
-          <div style="padding: 16px; background: rgba(251, 191, 36, 0.1); border-radius: 12px; border: 1px solid rgba(251, 191, 36, 0.3);">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-              <i data-lucide="code" style="width: 18px; height: 18px; color: #fbbf24;"></i>
-              <span style="font-weight: 600; color: #fbbf24;">Code Template Unlocked</span>
-            </div>
-            <div style="display: grid; gap: 6px; margin-bottom: 12px;">
-              ${content.files.map(f => `<div style="font-size: 12px; font-family: monospace; display: flex; gap: 6px;"><i data-lucide="file-code" style="width: 12px; height: 12px; color: var(--text-2); flex-shrink: 0;"></i>${f}</div>`).join('')}
-            </div>
-            <div style="background: var(--bg); padding: 10px; border-radius: 6px; font-family: monospace; font-size: 11px; margin-bottom: 8px; overflow-x: auto;">
-              ${content.instructions}
-            </div>
-            <a href="${content.repoAccess}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: #fbbf24; color: #000; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none;">
-              <i data-lucide="github" style="width: 14px; height: 14px;"></i> Access Repository
-            </a>
-          </div>
-        `;
-      } else if (content.type === 'credits') {
-        contentHtml = `
-          <div style="padding: 16px; background: rgba(236, 72, 153, 0.1); border-radius: 12px; border: 1px solid rgba(236, 72, 153, 0.3);">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-              <i data-lucide="image" style="width: 18px; height: 18px; color: #ec4899;"></i>
-              <span style="font-weight: 600; color: #ec4899;">${content.creditBalance} AI Credits Added</span>
-            </div>
-            <div style="background: var(--bg); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
-              <div style="font-size: 12px; color: var(--text-2); margin-bottom: 4px;">Your Credit Key:</div>
-              <div style="font-family: monospace; font-size: 13px; word-break: break-all;">${content.creditKey}</div>
-            </div>
-            <div style="font-size: 12px; color: var(--text-2);">
-              <div>Endpoint: ${content.endpoint}</div>
-              <div>Expires: ${new Date(content.expiresAt).toLocaleDateString()}</div>
-            </div>
-          </div>
-        `;
-      } else if (content.type === 'course') {
-        contentHtml = `
-          <div style="padding: 16px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.3);">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-              <i data-lucide="graduation-cap" style="width: 18px; height: 18px; color: var(--success);"></i>
-              <span style="font-weight: 600; color: var(--success);">Course Unlocked - ${content.totalDuration}</span>
-            </div>
-            <div style="display: grid; gap: 6px; margin-bottom: 12px;">
-              ${content.modules.slice(0, 5).map(m => `
-                <div style="font-size: 12px; display: flex; align-items: center; gap: 6px;">
-                  <i data-lucide="play-circle" style="width: 12px; height: 12px; color: var(--success);"></i>
-                  ${m.title || m} <span style="color: var(--text-2); font-size: 10px;">${m.duration || ''}</span>
-                </div>
-              `).join('')}
-              ${content.modules.length > 5 ? `<div style="font-size: 11px; color: var(--text-2);">+ ${content.modules.length - 5} more modules</div>` : ''}
-            </div>
-            <div style="font-size: 11px; color: var(--text-2);">Access Token: ${content.accessToken}</div>
-            ${content.certificate ? `<div style="font-size: 11px; color: var(--success); margin-top: 4px;"><i data-lucide="award" style="width: 12px; height: 12px; display: inline;"></i> Certificate included</div>` : ''}
-          </div>
-        `;
+        return;
       }
 
       results.innerHTML = `
-        <div class="result">
-          <div class="result-header">
-            <div class="result-icon"><i data-lucide="unlock"></i></div>
-            <span class="result-title">Content Unlocked via x402</span>
-            <span class="result-status">Verified</span>
-          </div>
-          <div class="product">
-            <div class="product-icon"><i data-lucide="${getProductIcon(content.type)}"></i></div>
-            <div class="product-info">
-              <div class="product-name">${p.name}</div>
-              <div class="product-desc">${p.description}</div>
-            </div>
-            <div class="product-price">$${paymentInfo.payment.amount}</div>
-          </div>
-
-          <div style="margin: 16px 0; padding: 12px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border);">
-            <div style="font-size: 12px; font-weight: 600; color: var(--accent); margin-bottom: 8px;">x402 Protocol (Check Network Tab!)</div>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size: 11px;">
-              <span style="padding: 4px 8px; background: rgba(251, 191, 36, 0.2); border-radius: 4px; color: #fbbf24;">1. GET → 402</span>
-              <span style="padding: 4px 8px; background: rgba(139, 92, 246, 0.2); border-radius: 4px; color: var(--accent);">2. USDC Transfer</span>
-              <span style="padding: 4px 8px; background: rgba(16, 185, 129, 0.2); border-radius: 4px; color: var(--success);">3. GET + TxHash → 200</span>
-            </div>
-          </div>
-
-          <div class="order-row">
-            <span class="order-label">Transaction</span>
-            <span class="order-value"><a href="https://testnet.arcscan.app/tx/${payData.txHash}" target="_blank" style="color: var(--accent);">${payData.txHash.slice(0,12)}...${payData.txHash.slice(-8)}</a></span>
-          </div>
-
-          ${contentData.contentHash ? `
-          <div class="order-row">
-            <span class="order-label">Content Hash</span>
-            <span class="order-value" style="font-family: monospace; font-size: 11px;">${contentData.contentHash.slice(0,18)}...</span>
-          </div>
-          ` : ''}
-
-          ${contentData.receipt ? `
-          <div style="margin: 12px 0; padding: 12px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3);">
-            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
-              <i data-lucide="shield-check" style="width: 14px; height: 14px; color: var(--success);"></i>
-              <span style="font-size: 12px; font-weight: 600; color: var(--success);">EIP-712 Receipt</span>
-            </div>
-            <div style="font-size: 10px; color: var(--text-2);">
-              <div>Merchant: ${contentData.receipt.merchant?.slice(0,10)}...${contentData.receipt.merchant?.slice(-6) || 'N/A'}</div>
-              <div>Signature: ${contentData.receipt.signature?.slice(0,20)}...</div>
-              <div style="margin-top: 4px; color: var(--success);">Cryptographic proof of delivery</div>
-            </div>
-          </div>
-          ` : ''}
-
-          ${contentHtml}
-        </div>
-      `;
-
-      btn.disabled = false;
-      btn.innerHTML = '<i data-lucide="sparkles"></i> Buy';
-      lucide.createIcons();
-    }
-
-    function getProductIcon(type) {
-      const icons = { 'api-key': 'key', 'report': 'file-text', 'code-template': 'code', 'credits': 'image', 'course': 'graduation-cap' };
-      return icons[type] || 'package';
-    }
-
-    // Display x402 success with real network request data
-    function displayX402Success(contentData, payData, x402Steps, paymentInfo) {
-      const results = document.getElementById('results');
-      const btn = document.getElementById('buy-btn');
-      const p = contentData.product;
-      const content = contentData.content;
-
-      results.innerHTML = `
-        <div class="result">
+        <div class="result-card">
           <div class="result-header">
             <div class="result-icon"><i data-lucide="check"></i></div>
-            <span class="result-title">Purchase Complete via x402</span>
-            <span class="result-status">Verified</span>
-          </div>
-          <div class="product">
-            <div class="product-icon"><i data-lucide="graduation-cap"></i></div>
-            <div class="product-info">
-              <div class="product-name">${p.name}</div>
-              <div class="product-desc">${p.description || ''}</div>
+            <div class="result-title">
+              <h3>Purchase Complete</h3>
+              <p>${data.message || 'Your order is confirmed on-chain'}</p>
             </div>
-            <div class="product-price">$${paymentInfo.payment.amount}</div>
+            <div class="result-status">Confirmed</div>
           </div>
-
-          <div style="margin: 20px 0; padding: 16px; background: var(--bg); border-radius: 12px; border: 1px solid var(--accent);">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
-              <i data-lucide="activity" style="width: 18px; height: 18px; color: var(--accent);"></i>
-              <span style="font-weight: 600; color: var(--accent);">x402 Protocol Flow (Check Network Tab!)</span>
+          <div class="result-body">
+            <div class="product-row">
+              <span class="product-emoji">${EMOJIS[product?.category] || '📦'}</span>
+              <div class="product-info">
+                <div class="product-name">${product?.name || 'Product'}</div>
+                <div class="product-desc">${product?.description || ''}</div>
+              </div>
+              <div class="product-price">${order.totalAmount}</div>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 12px;">
-              <div style="display: flex; gap: 12px; align-items: flex-start;">
-                <div style="width: 28px; height: 28px; background: rgba(251, 191, 36, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                  <span style="font-size: 12px; font-weight: 700; color: #fbbf24;">1</span>
-                </div>
-                <div>
-                  <div style="font-weight: 500; margin-bottom: 4px;">GET /api/x402/course</div>
-                  <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <span style="padding: 3px 8px; background: rgba(251, 191, 36, 0.2); border-radius: 4px; font-size: 11px; font-weight: 600; color: #fbbf24;">HTTP 402</span>
-                    <span style="padding: 3px 8px; background: rgba(255,255,255,0.1); border-radius: 4px; font-size: 10px; font-family: monospace;">X-Payment-Amount: ${paymentInfo.payment.amount}</span>
-                  </div>
-                </div>
-              </div>
+            <div class="content-unlocked">
+              <div class="content-header"><i data-lucide="check-circle"></i> Order Confirmed</div>
+              <div class="content-item"><i data-lucide="hash"></i> Order #${order.id.slice(0, 8)}</div>
+              <div class="content-item"><i data-lucide="credit-card"></i> Paid via ${order.paymentMethod || 'x402'}</div>
+              <div class="content-item"><i data-lucide="clock"></i> ${new Date().toLocaleString()}</div>
+            </div>
 
-              <div style="display: flex; gap: 12px; align-items: flex-start;">
-                <div style="width: 28px; height: 28px; background: rgba(139, 92, 246, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                  <span style="font-size: 12px; font-weight: 700; color: var(--accent);">2</span>
-                </div>
-                <div>
-                  <div style="font-weight: 500; margin-bottom: 4px;">USDC Transfer on Arc Testnet</div>
-                  <a href="${EXPLORER}/tx/${payData.txHash}" target="_blank" style="font-size: 11px; color: var(--accent); font-family: monospace; word-break: break-all;">${payData.txHash}</a>
-                </div>
-              </div>
+            <button class="details-toggle" onclick="toggleDetails(this)">
+              <i data-lucide="receipt"></i>
+              View transaction details
+              <i data-lucide="chevron-down"></i>
+            </button>
 
-              <div style="display: flex; gap: 12px; align-items: flex-start;">
-                <div style="width: 28px; height: 28px; background: rgba(16, 185, 129, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                  <span style="font-size: 12px; font-weight: 700; color: var(--success);">3</span>
-                </div>
-                <div>
-                  <div style="font-weight: 500; margin-bottom: 4px;">GET /api/x402/course + X-Payment-TxHash</div>
-                  <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <span style="padding: 3px 8px; background: rgba(16, 185, 129, 0.2); border-radius: 4px; font-size: 11px; font-weight: 600; color: var(--success);">HTTP 200</span>
-                    <span style="padding: 3px 8px; background: rgba(255,255,255,0.1); border-radius: 4px; font-size: 10px; font-family: monospace;">Content Delivered</span>
-                  </div>
-                </div>
+            <div class="details-content" id="tx-details">
+              <div class="detail-row">
+                <span class="detail-label">Transaction</span>
+                <span class="detail-value"><a href="${EXPLORER}/tx/${txHash}" target="_blank">${txHash.slice(0, 10)}...${txHash.slice(-6)}</a></span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Network</span>
+                <span class="detail-value">Arc Testnet</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Amount</span>
+                <span class="detail-value">${order.totalAmount}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Method</span>
+                <span class="detail-value">${order.paymentMethod || 'x402'}</span>
               </div>
             </div>
           </div>
-
-          ${content && content.modules ? `
-          <div style="padding: 16px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.3);">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-              <i data-lucide="unlock" style="width: 16px; height: 16px; color: var(--success);"></i>
-              <span style="font-weight: 600; color: var(--success);">Content Unlocked</span>
-            </div>
-            <div style="display: grid; gap: 6px;">
-              ${content.modules.slice(0, 5).map(m => `
-                <div style="font-size: 12px; display: flex; align-items: center; gap: 6px;">
-                  <i data-lucide="check-circle" style="width: 12px; height: 12px; color: var(--success);"></i>
-                  ${m}
-                </div>
-              `).join('')}
-              ${content.modules.length > 5 ? `<div style="font-size: 11px; color: var(--text-2);">+ ${content.modules.length - 5} more modules</div>` : ''}
-            </div>
-            ${content.accessUrl ? `<a href="${content.accessUrl}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding: 8px 14px; background: var(--success); color: #000; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none;"><i data-lucide="external-link" style="width: 12px; height: 12px;"></i> Access Course</a>` : ''}
-          </div>
-          ` : ''}
         </div>
       `;
-
-      btn.disabled = false;
-      btn.innerHTML = '<i data-lucide="sparkles"></i> Buy';
       lucide.createIcons();
     }
 
-    function getIcon(cat) {
-      const icons = { hardware: 'hard-drive', 'api-credits': 'zap', courses: 'graduation-cap', cables: 'cable', books: 'book-open' };
-      return icons[cat] || 'package';
+    // Emoji map for products
+    const EMOJIS = {
+      'api': '🔑',
+      'content': '🖼️',
+      'courses': '📚',
+      'report': '📊'
+    };
+
+    function toggleDetails(btn) {
+      const content = document.getElementById('tx-details');
+      const icon = btn.querySelector('[data-lucide="chevron-down"], [data-lucide="chevron-up"]');
+      content.classList.toggle('open');
+      icon.setAttribute('data-lucide', content.classList.contains('open') ? 'chevron-up' : 'chevron-down');
+      lucide.createIcons();
     }
 
-    function showToast(msg) {
-      const toast = document.createElement('div');
-      toast.className = 'toast';
-      toast.textContent = msg;
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2000);
-    }
-
-    // Quick buttons - only set the input value, don't auto-buy
-    document.querySelectorAll('.quick-btn').forEach(btn => {
+    // Quick picks - use actual product names from PRODUCTS mapping
+    document.querySelectorAll('.quick-pick').forEach(btn => {
       btn.onclick = () => {
-        document.getElementById('query').value = btn.dataset.product || btn.dataset.q;
+        const productId = btn.dataset.product;
+        document.getElementById('query').value = PRODUCTS[productId]?.name || productId;
+        buy();
       };
     });
 
-    // Enter key to search
+    // Enter key
     document.getElementById('query').onkeypress = e => { if (e.key === 'Enter') buy(); };
-
-    // Enter key to sign in
     document.getElementById('email-input').onkeypress = e => { if (e.key === 'Enter') signIn(); };
 
-    // Click outside modal to close
+    // Click outside modal
     document.getElementById('signin-modal').onclick = e => {
       if (e.target.id === 'signin-modal') hideSignIn();
     };
 
-    // Check for saved session
-    const savedEmail = localStorage.getItem('arcshopper_email');
-    const savedWallet = localStorage.getItem('arcshopper_wallet');
-    const savedWalletId = localStorage.getItem('arcshopper_walletId');
+    // Restore session
+    const savedEmail = localStorage.getItem('arc_email');
+    const savedWallet = localStorage.getItem('arc_wallet');
     if (savedEmail && savedWallet) {
       userEmail = savedEmail;
       walletAddress = savedWallet;
-      walletId = savedWalletId;
       isSignedIn = true;
-      updateUI();
       loadBalance();
       loadHistory();
     }
+    updateHeader();
   </script>
 </body>
 </html>

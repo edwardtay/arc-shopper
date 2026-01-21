@@ -116,6 +116,49 @@ export class ShoppingAgent {
       // Record in policy spending
       this.policy.recordSpending(decision.estimatedCost);
 
+      // Log successful execution to audit trail
+      auditLogger.logExecution({
+        decision: {
+          id: decision.id,
+          query,
+          intent: 'shopping',
+          requiredActions: ['search', 'evaluate', 'purchase'],
+          estimatedCost: decision.estimatedCost,
+          policyCheck: {
+            allowed: true,
+            violations: [],
+            warnings: [],
+            appliedRules: [],
+          },
+          thinking: decision.thinking,
+          approved: true,
+          requiresHumanApproval: false,
+        },
+        success: true,
+        actions: [{
+          action: 'purchase',
+          success: true,
+          data: {
+            product: decision.selectedProduct.name,
+            price: decision.selectedProduct.price,
+            orderId: order.id,
+          },
+          paymentRequired: true,
+          duration: Date.now() - startTime,
+        }],
+        payments: order.txHash ? [{
+          txHash: order.txHash,
+          from: agent.getIdentity().address,
+          to: '0x000000000000000000000000000000000000dEaD',
+          amount: decision.estimatedCost,
+          service: 'x402',
+          status: 'confirmed' as const,
+          timestamp: Date.now(),
+        }] : [],
+        totalCost: decision.estimatedCost,
+        duration: Date.now() - startTime,
+      });
+
       return {
         success: true,
         decision,
@@ -124,6 +167,9 @@ export class ShoppingAgent {
         duration: Date.now() - startTime,
       };
     } catch (error) {
+      // Log failed execution to audit trail
+      auditLogger.logError(decision.id, error instanceof Error ? error.message : 'Unknown error');
+
       return {
         success: false,
         decision,

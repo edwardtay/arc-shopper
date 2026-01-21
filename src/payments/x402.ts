@@ -279,9 +279,15 @@ export class X402V2PaymentClient {
 
   // Settle payment on-chain (V2)
   async settlePayment(signedPayment: X402V2Signature): Promise<PaymentResult> {
+    console.log('=== x402 SETTLE PAYMENT ===');
+    console.log('Facilitator URL:', this.facilitatorUrl);
+    console.log('Amount:', signedPayment.paymentDetails.amount);
+    console.log('Recipient:', signedPayment.paymentDetails.recipient);
+
     // Try facilitator first
     if (this.facilitatorUrl) {
       try {
+        console.log('Calling facilitator:', this.facilitatorUrl + '/v2/settle');
         const response = await axios.post(
           this.facilitatorUrl + '/v2/settle',
           {
@@ -298,7 +304,10 @@ export class X402V2PaymentClient {
           }
         );
 
+        console.log('Facilitator response:', JSON.stringify(response.data));
+
         if (response.data.txHash) {
+          console.log('SUCCESS via facilitator! txHash:', response.data.txHash);
           return {
             txHash: response.data.txHash,
             from: signedPayment.signer,
@@ -310,12 +319,17 @@ export class X402V2PaymentClient {
             blockNumber: response.data.blockNumber,
           };
         }
-      } catch (error) {
-        console.log('x402 V2: Facilitator settlement failed, using direct settlement');
+        console.log('Facilitator returned no txHash, falling through to direct');
+      } catch (error: any) {
+        console.log('x402 V2: Facilitator call failed:', error.message);
+        console.log('Falling back to direct settlement');
       }
+    } else {
+      console.log('No facilitator URL configured, using direct settlement');
     }
 
     // Direct on-chain settlement
+    console.log('Attempting direct on-chain settlement...');
     return this.settleDirectly(signedPayment);
   }
 

@@ -92,7 +92,7 @@ async function getOrCreateWalletSet(): Promise<string> {
   try {
     // Try to list existing wallet sets first
     const listResponse = await axios.get(
-      `${CIRCLE_API_URL}/developer/walletSets`,
+      `${CIRCLE_API_URL}/walletSets`,
       { headers: getHeaders(), timeout: 10000 }
     );
 
@@ -106,7 +106,7 @@ async function getOrCreateWalletSet(): Promise<string> {
     // Create new wallet set
     const entitySecretCiphertext = await getEntitySecretCiphertext();
     const createResponse = await axios.post(
-      `${CIRCLE_API_URL}/developer/walletSets`,
+      `${CIRCLE_API_URL}/walletSets`,
       {
         idempotencyKey: crypto.randomUUID(),
         name: 'ArcShopper-Agents',
@@ -140,7 +140,7 @@ export async function createUserWallet(userId: string): Promise<{
     const entitySecretCiphertext = await getEntitySecretCiphertext();
 
     const response = await axios.post(
-      `${CIRCLE_API_URL}/developer/wallets`,
+      `${CIRCLE_API_URL}/wallets`,
       {
         idempotencyKey: crypto.randomUUID(),
         walletSetId,
@@ -216,11 +216,17 @@ export async function listUserWallets(userId: string): Promise<Array<{
   blockchain: string;
 }>> {
   try {
+    // First ensure we have a wallet set
+    const walletSetId = await getOrCreateWalletSet();
+
     const response = await axios.get(
-      `${CIRCLE_API_URL}/developer/wallets`,
+      `${CIRCLE_API_URL}/wallets`,
       {
         headers: getHeaders(),
-        params: { refId: userId.toLowerCase() },
+        params: {
+          walletSetId,
+          refId: userId.toLowerCase()
+        },
         timeout: 10000,
       }
     );
@@ -295,7 +301,7 @@ export async function transferTokens(
     }
 
     const response = await axios.post(
-      `${CIRCLE_API_URL}/developer/transactions/transfer`,
+      `${CIRCLE_API_URL}/transactions/transfer`,
       payload,
       { headers: getHeaders(), timeout: 30000 }
     );
@@ -322,7 +328,7 @@ export async function estimateGas(
 ): Promise<{ gasLimit: string; gasFee: string } | null> {
   try {
     const response = await axios.post(
-      `${CIRCLE_API_URL}/developer/transactions/transfer/estimateFee`,
+      `${CIRCLE_API_URL}/transactions/transfer/estimateFee`,
       {
         walletId,
         destinationAddress,
