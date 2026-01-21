@@ -172,6 +172,21 @@
     }
     .fund-btn:hover { opacity: 0.9; }
     .fund-btn i { width: 16px; height: 16px; }
+    .refresh-btn {
+      background: none;
+      border: none;
+      color: var(--text-2);
+      cursor: pointer;
+      padding: 4px;
+      margin-left: 8px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+    }
+    .refresh-btn:hover { color: var(--circle); background: rgba(255,255,255,0.1); }
+    .refresh-btn i { width: 16px; height: 16px; }
+    .refresh-btn.spinning i { animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
     /* Sign In Modal */
     .modal-overlay {
@@ -473,6 +488,32 @@
       font-size: 14px;
       z-index: 1001;
     }
+
+    /* Product select buttons */
+    .product-select-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s;
+    }
+    .product-select-btn:hover {
+      border-color: var(--accent);
+      background: rgba(139, 92, 246, 0.1);
+    }
+    .product-select-btn i { width: 18px; height: 18px; color: var(--accent); }
+    .product-select-btn span {
+      margin-left: auto;
+      color: var(--success);
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -515,7 +556,7 @@
             Your Shopping Wallet
           </div>
           <div class="powered-by">
-            Powered by <span>Circle</span>
+            <span style="color: var(--circle);">Arc Testnet</span> · <span>Circle</span>
           </div>
         </div>
         <div class="wallet-address" onclick="copyAddress()" id="wallet-address">
@@ -526,8 +567,11 @@
           <div class="balance-display">
             <span class="balance-amount" id="wallet-balance">$0.0</span>
             <span class="balance-currency">USDC</span>
+            <button class="refresh-btn" onclick="refreshBalance()" title="Refresh balance">
+              <i data-lucide="refresh-cw" id="refresh-icon"></i>
+            </button>
           </div>
-          <a href="https://faucet.circle.com" target="_blank" class="fund-btn">
+          <a href="https://faucet.circle.com" target="_blank" class="fund-btn" style="text-decoration: none;">
             <i data-lucide="plus"></i> Get Testnet USDC
           </a>
         </div>
@@ -535,7 +579,7 @@
     </div>
 
     <h1>What do you want to buy?</h1>
-    <p class="subtitle">AI agent finds the best deal and pays with USDC</p>
+    <p class="subtitle">AI agent finds the best deal and pays with USDC via <strong style="color: var(--accent);">x402</strong> on <strong style="color: var(--circle);">Arc Testnet</strong></p>
 
     <div class="search-box">
       <input class="search-input" id="query" placeholder="e.g. Buy API credits under $5" />
@@ -545,10 +589,11 @@
     </div>
 
     <div class="quick-btns">
-      <button class="quick-btn" data-q="Buy cheapest hardware wallet">Hardware Wallet</button>
-      <button class="quick-btn" data-q="Buy OpenAI API credits under $5">API Credits</button>
-      <button class="quick-btn" data-q="Buy Solidity course">Dev Course</button>
-      <button class="quick-btn" data-q="Buy USB-C cable">USB Cable</button>
+      <button class="quick-btn" data-q="api-key" data-product="api-key">API Key ($0.50)</button>
+      <button class="quick-btn" data-q="premium-report" data-product="premium-report">Security Report ($1)</button>
+      <button class="quick-btn" data-q="code-template" data-product="code-template">Code Template ($2)</button>
+      <button class="quick-btn" data-q="ai-credits" data-product="ai-credits">AI Credits ($1.50)</button>
+      <button class="quick-btn" data-q="solidity-course" data-product="solidity-course">Solidity Course ($1)</button>
     </div>
 
     <div id="results">
@@ -559,8 +604,29 @@
     </div>
 
     <div class="history" id="history" style="display: none;">
-      <div class="history-title">Recent Purchases</div>
+      <div class="history-title">Purchase History (with EIP-712 Receipts)</div>
       <div id="history-list"></div>
+    </div>
+
+    <div class="credits-section" id="credits-section" style="display: none; margin-top: 24px;">
+      <div style="background: var(--surface); border-radius: 12px; padding: 20px; border: 1px solid var(--border);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="zap" style="width: 20px; height: 20px; color: #ec4899;"></i>
+            <span style="font-weight: 600;">Streaming Credits</span>
+          </div>
+          <span id="credit-balance" style="font-size: 20px; font-weight: 700; color: #ec4899;">0 credits</span>
+        </div>
+        <p style="font-size: 13px; color: var(--text-2); margin-bottom: 12px;">Pay-per-use API access. Buy credits and use them for AI image generation.</p>
+        <div style="display: flex; gap: 8px;">
+          <button onclick="buyCredits(100)" style="flex: 1; padding: 10px; background: rgba(236, 72, 153, 0.2); border: 1px solid #ec4899; border-radius: 8px; color: #ec4899; font-size: 13px; cursor: pointer;">
+            Buy 100 ($1.50)
+          </button>
+          <button onclick="buyCredits(500)" style="flex: 1; padding: 10px; background: rgba(236, 72, 153, 0.2); border: 1px solid #ec4899; border-radius: 8px; color: #ec4899; font-size: 13px; cursor: pointer;">
+            Buy 500 ($7.50)
+          </button>
+        </div>
+      </div>
     </div>
   </main>
 
@@ -599,24 +665,24 @@
       btn.textContent = 'Creating wallet...';
 
       try {
-        // Create/get Circle wallet for this email
-        const res = await fetch(API + '/circle/wallet', {
+        // Create/get Arc wallet for this email (real on-chain wallet)
+        const res = await fetch(API + '/arc-wallet', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId: email })
         });
         const data = await res.json();
 
-        if (data.success || data.walletAddress) {
+        if (data.success || data.address) {
           userEmail = email;
-          walletAddress = data.walletAddress;
-          walletId = data.walletId;
+          walletAddress = data.address;
+          walletId = email; // Use email as ID for Arc wallets
           isSignedIn = true;
 
           // Save to localStorage
           localStorage.setItem('arcshopper_email', email);
           localStorage.setItem('arcshopper_wallet', walletAddress);
-          localStorage.setItem('arcshopper_walletId', walletId);
+          localStorage.setItem('arcshopper_walletId', email);
 
           hideSignIn();
           updateUI();
@@ -691,39 +757,118 @@
       }
     }
 
-    // Load wallet balance
+    function copyAddressForFunding() {
+      if (walletAddress) {
+        navigator.clipboard.writeText(walletAddress);
+        showToast('Address copied! Send USDC on Arc testnet to fund your wallet.');
+      }
+    }
+
+    // Load wallet balance from Arc testnet
     async function loadBalance() {
-      if (!walletId) return;
+      if (!userEmail) return;
       try {
-        const res = await fetch(API + '/circle/balance/' + walletId);
+        const res = await fetch(API + '/arc-wallet', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: userEmail })
+        });
         const data = await res.json();
         const usdc = parseFloat(data.usdc || '0');
         document.getElementById('wallet-balance').textContent = '$' + usdc.toFixed(2);
+        // Update wallet address in case it changed
+        if (data.address) walletAddress = data.address;
       } catch (e) {
         console.error('Failed to load balance:', e);
       }
     }
 
-    // Load purchase history
+    // Refresh balance with animation
+    async function refreshBalance() {
+      const btn = document.querySelector('.refresh-btn');
+      btn.classList.add('spinning');
+      await loadBalance();
+      setTimeout(() => btn.classList.remove('spinning'), 500);
+      showToast('Balance updated!');
+    }
+
+    // Load purchase history from x402
     async function loadHistory() {
+      if (!userEmail) return;
       try {
-        const res = await fetch(API + '/shop/orders');
-        const { orders } = await res.json();
-        if (orders?.length) {
+        // Get wallet address
+        const walletRes = await fetch(API + '/arc-wallet', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: userEmail })
+        });
+        const walletData = await walletRes.json();
+
+        // Get purchase history
+        const res = await fetch(API + '/x402/history?userId=' + walletData.address);
+        const data = await res.json();
+
+        if (data.purchases?.length) {
           document.getElementById('history').style.display = 'block';
-          document.getElementById('history-list').innerHTML = orders.slice(-5).reverse().map(o => `
+          document.getElementById('history-list').innerHTML = data.purchases.slice(-5).reverse().map(p => `
             <div class="history-item">
-              <i data-lucide="check-circle"></i>
-              <span class="history-name">${o.product?.name || 'Product'}</span>
-              <span class="history-amount">${o.totalAmount}</span>
+              <i data-lucide="shield-check" style="color: var(--success);"></i>
+              <span class="history-name">${p.productName}</span>
+              <span style="font-size: 10px; color: var(--text-2); font-family: monospace;">${p.contentHash?.slice(0,10)}...</span>
+              <span class="history-amount">$${p.amount}</span>
             </div>
           `).join('');
           lucide.createIcons();
         }
+
+        // Show credits section
+        document.getElementById('credits-section').style.display = 'block';
+        loadCredits();
+      } catch (e) {
+        console.error('History load error:', e);
+      }
+    }
+
+    // Load streaming credits balance
+    async function loadCredits() {
+      if (!userEmail) return;
+      try {
+        const res = await fetch(API + '/x402/stream?userId=' + userEmail);
+        const data = await res.json();
+        document.getElementById('credit-balance').textContent = data.credits + ' credits';
       } catch (e) {}
     }
 
-    // Buy
+    // Buy streaming credits
+    async function buyCredits(amount) {
+      if (!isSignedIn) {
+        showSignIn();
+        return;
+      }
+      showToast('Purchasing ' + amount + ' credits...');
+      try {
+        const res = await fetch(API + '/x402/stream', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: userEmail, action: 'buy', credits: amount })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Purchased ' + amount + ' credits!');
+          loadCredits();
+          loadBalance();
+        } else {
+          showToast('Failed: ' + (data.error || 'Unknown error'));
+        }
+      } catch (e) {
+        showToast('Error: ' + e.message);
+      }
+    }
+
+    // Digital product IDs
+    const DIGITAL_PRODUCTS = ['api-key', 'premium-report', 'code-template', 'ai-credits', 'solidity-course', 'defi-course'];
+
+    // Buy with REAL x402 protocol - actual network requests visible in Network tab
     async function buy() {
       if (!isSignedIn) {
         showSignIn();
@@ -737,8 +882,107 @@
 
       btn.disabled = true;
       btn.innerHTML = '<span class="loading"></span>';
-      results.innerHTML = '<div class="empty"><span class="loading"></span><p style="margin-top:12px">Finding best option...</p></div>';
 
+      // Check if it's a digital product
+      const queryLower = query.toLowerCase();
+      let productId = DIGITAL_PRODUCTS.find(p => queryLower.includes(p) || queryLower.includes(p.replace('-', ' ')));
+
+      // Map common queries to product IDs
+      if (!productId) {
+        if (queryLower.includes('api') || queryLower.includes('key')) productId = 'api-key';
+        else if (queryLower.includes('report') || queryLower.includes('security') || queryLower.includes('audit')) productId = 'premium-report';
+        else if (queryLower.includes('code') || queryLower.includes('template') || queryLower.includes('kit')) productId = 'code-template';
+        else if (queryLower.includes('ai') || queryLower.includes('image') || queryLower.includes('credit')) productId = 'ai-credits';
+        else if (queryLower.includes('solidity') || queryLower.includes('course') || queryLower.includes('learn')) productId = 'solidity-course';
+        else if (queryLower.includes('defi')) productId = 'defi-course';
+      }
+
+      if (productId) {
+        // REAL x402 FLOW for digital products!
+        results.innerHTML = '<div class="empty"><span class="loading"></span><p style="margin-top:12px">Step 1: Requesting product...</p></div>';
+
+        try {
+          // STEP 1: Make actual x402 request - will return 402
+          const x402Res = await fetch(API + '/x402/products?id=' + productId);
+          const x402Headers = {};
+          x402Res.headers.forEach((v, k) => { if (k.startsWith('x-')) x402Headers[k] = v; });
+
+          if (x402Res.status === 402) {
+            const paymentInfo = await x402Res.json();
+
+            results.innerHTML = '<div class="empty"><span class="loading"></span><p style="margin-top:12px">Step 2: Got 402 - Executing USDC payment...</p></div>';
+
+            // STEP 2: Execute payment via backend
+            const payRes = await fetch(API + '/shop/pay', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId: userEmail,
+                amount: paymentInfo.payment.amount,
+                recipient: paymentInfo.payment.recipient
+              })
+            });
+            const payData = await payRes.json();
+
+            if (!payData.success) {
+              throw new Error(payData.error || 'Payment failed');
+            }
+
+            results.innerHTML = '<div class="empty"><span class="loading"></span><p style="margin-top:12px">Step 3: Verifying payment & unlocking content...</p></div>';
+
+            // STEP 3: Retry request with payment proof
+            const retryRes = await fetch(API + '/x402/products?id=' + productId, {
+              headers: { 'X-Payment-TxHash': payData.txHash }
+            });
+            const contentData = await retryRes.json();
+
+            if (retryRes.status === 200 && contentData.success) {
+              // SUCCESS! Show the gated content
+              displayDigitalProduct(contentData, payData, paymentInfo);
+              loadBalance();
+              return;
+            } else {
+              throw new Error(contentData.error || 'Verification failed');
+            }
+          } else {
+            throw new Error('Expected 402 but got ' + x402Res.status);
+          }
+        } catch (e) {
+          results.innerHTML = `<div class="result"><p style="color: #ef4444;">x402 Error: ${e.message}</p></div>`;
+          btn.disabled = false;
+          btn.innerHTML = '<i data-lucide="sparkles"></i> Buy';
+          lucide.createIcons();
+          return;
+        }
+      }
+
+      // Fallback - show available products
+      results.innerHTML = `<div class="result">
+        <p style="color: var(--text-2); margin-bottom: 16px;">Choose a digital product to purchase:</p>
+        <div style="display: grid; gap: 10px;">
+          <button onclick="document.getElementById('query').value='api-key';buy();" class="product-select-btn">
+            <i data-lucide="key"></i> API Key <span>$0.50</span>
+          </button>
+          <button onclick="document.getElementById('query').value='premium-report';buy();" class="product-select-btn">
+            <i data-lucide="file-text"></i> Security Report <span>$1.00</span>
+          </button>
+          <button onclick="document.getElementById('query').value='code-template';buy();" class="product-select-btn">
+            <i data-lucide="code"></i> Code Template <span>$2.00</span>
+          </button>
+          <button onclick="document.getElementById('query').value='ai-credits';buy();" class="product-select-btn">
+            <i data-lucide="image"></i> 100 AI Credits <span>$1.50</span>
+          </button>
+          <button onclick="document.getElementById('query').value='solidity-course';buy();" class="product-select-btn">
+            <i data-lucide="graduation-cap"></i> Solidity Course <span>$1.00</span>
+          </button>
+        </div>
+      </div>`;
+      btn.disabled = false;
+      btn.innerHTML = '<i data-lucide="sparkles"></i> Buy';
+      lucide.createIcons();
+      return;
+
+      // Legacy flow removed - all products now use x402
       try {
         const res = await fetch(API + '/shop/buy', {
           method: 'POST',
@@ -747,9 +991,62 @@
         });
         const data = await res.json();
 
-        if (data.success && data.selectedProduct) {
-          const p = data.selectedProduct;
-          const o = data.order || {};
+        if (data.success && (data.selectedProduct || data.product)) {
+          const p = data.selectedProduct || data.product;
+          const payment = data.payment || {};
+          const content = data.content;
+          const x402Steps = data.x402Steps || [];
+
+          // Build x402 protocol flow visualization
+          let x402FlowHtml = '';
+          if (x402Steps.length > 0) {
+            x402FlowHtml = `
+              <div style="margin-bottom: 20px; padding: 16px; background: var(--bg); border-radius: 12px; border: 1px solid var(--border);">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                  <i data-lucide="activity" style="width: 16px; height: 16px; color: var(--accent);"></i>
+                  <span style="font-size: 13px; font-weight: 600; color: var(--accent);">x402 Protocol Flow</span>
+                </div>
+                ${x402Steps.map((step, i) => `
+                  <div style="display: flex; gap: 12px; margin-bottom: ${i < x402Steps.length - 1 ? '8px' : '0'};">
+                    <div style="width: 24px; height: 24px; background: ${step.status === 402 ? 'rgba(251, 191, 36, 0.2)' : step.status === 200 ? 'rgba(16, 185, 129, 0.2)' : 'rgba(139, 92, 246, 0.2)'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                      <span style="font-size: 11px; font-weight: 600; color: ${step.status === 402 ? '#fbbf24' : step.status === 200 ? 'var(--success)' : 'var(--accent)'};">${step.step}</span>
+                    </div>
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="font-size: 12px; color: var(--text); margin-bottom: 2px;">${step.description}</div>
+                      ${step.method ? `<span style="font-size: 10px; padding: 2px 6px; background: rgba(255,255,255,0.1); border-radius: 4px; font-family: monospace;">${step.method}${step.url ? ' ' + step.url : ''}</span>` : ''}
+                      ${step.status ? `<span style="margin-left: 6px; font-size: 10px; padding: 2px 6px; background: ${step.status === 402 ? 'rgba(251, 191, 36, 0.2)' : 'rgba(16, 185, 129, 0.2)'}; border-radius: 4px; color: ${step.status === 402 ? '#fbbf24' : 'var(--success)'};">HTTP ${step.status}</span>` : ''}
+                      ${step.txHash ? `<div style="margin-top: 4px;"><a href="${EXPLORER}/tx/${step.txHash}" target="_blank" style="font-size: 10px; color: var(--accent); font-family: monospace;">${step.txHash.slice(0,16)}...</a></div>` : ''}
+                      ${step.headers ? `<div style="margin-top: 4px; font-size: 10px; color: var(--text-2); font-family: monospace;">${Object.entries(step.headers).slice(0,3).map(([k,v]) => `${k}: ${v}`).join(' · ')}</div>` : ''}
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            `;
+          }
+
+          // Build course content if delivered
+          let contentHtml = '';
+          if (content && content.modules) {
+            contentHtml = `
+              <div style="margin-top: 16px; padding: 16px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                  <i data-lucide="unlock" style="width: 16px; height: 16px; color: var(--success);"></i>
+                  <span style="font-size: 13px; font-weight: 600; color: var(--success);">Content Unlocked</span>
+                </div>
+                <div style="display: grid; gap: 6px;">
+                  ${content.modules.slice(0, 5).map(m => `
+                    <div style="font-size: 12px; color: var(--text); display: flex; align-items: center; gap: 6px;">
+                      <i data-lucide="check-circle" style="width: 12px; height: 12px; color: var(--success);"></i>
+                      ${m}
+                    </div>
+                  `).join('')}
+                  ${content.modules.length > 5 ? `<div style="font-size: 11px; color: var(--text-2);">+ ${content.modules.length - 5} more modules</div>` : ''}
+                </div>
+                ${content.accessUrl ? `<a href="${content.accessUrl}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding: 8px 14px; background: var(--success); color: #000; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none;"><i data-lucide="external-link" style="width: 12px; height: 12px;"></i> Access Course</a>` : ''}
+              </div>
+            `;
+          }
+
           results.innerHTML = `
             <div class="result">
               <div class="result-header">
@@ -758,23 +1055,37 @@
                 <span class="result-status">Confirmed</span>
               </div>
               <div class="product">
-                <div class="product-icon"><i data-lucide="${getIcon(p.category)}"></i></div>
+                <div class="product-icon"><i data-lucide="${p.type === 'course' ? 'graduation-cap' : getIcon(p.category)}"></i></div>
                 <div class="product-info">
                   <div class="product-name">${p.name}</div>
                   <div class="product-desc">${p.description || ''}</div>
                 </div>
                 <div class="product-price">${p.price}</div>
               </div>
+              ${x402FlowHtml}
               <div class="order-row">
-                <span class="order-label">Status</span>
-                <span class="order-value success">Paid</span>
+                <span class="order-label">Protocol</span>
+                <span class="order-value" style="color: var(--accent);">x402</span>
               </div>
-              ${o.txHash ? `
+              <div class="order-row">
+                <span class="order-label">Network</span>
+                <span class="order-value" style="color: var(--circle);">Arc Testnet (${payment.chainId || 5042002})</span>
+              </div>
+              <div class="order-row">
+                <span class="order-label">Amount</span>
+                <span class="order-value success">${payment.amount || p.price} USDC</span>
+              </div>
+              ${payment.txHash ? `
               <div class="order-row">
                 <span class="order-label">Transaction</span>
-                <span class="order-value"><a href="${EXPLORER}/tx/${o.txHash}" target="_blank">${o.txHash.slice(0,10)}...${o.txHash.slice(-6)}</a></span>
+                <span class="order-value"><a href="${payment.explorer || EXPLORER + '/tx/' + payment.txHash}" target="_blank">${payment.txHash.slice(0,10)}...${payment.txHash.slice(-6)}</a></span>
               </div>
               ` : ''}
+              ${contentHtml}
+              <div style="margin-top: 16px; padding: 10px; background: rgba(139, 92, 246, 0.1); border-radius: 8px; font-size: 11px; color: var(--accent); display: flex; align-items: center; gap: 6px;">
+                <i data-lucide="shield-check" style="width: 14px; height: 14px;"></i>
+                Verified on-chain USDC payment via HTTP 402 Payment Required protocol
+              </div>
             </div>
           `;
           loadBalance();
@@ -788,6 +1099,7 @@
                 <span class="result-status error">Failed</span>
               </div>
               <p style="color: var(--text-2); padding: 16px 0;">${data.message || 'No matching products found'}</p>
+              ${data.suggestion ? `<p style="color: var(--accent); font-size: 13px;">${data.suggestion}</p>` : ''}
             </div>
           `;
         }
@@ -799,6 +1111,264 @@
         btn.innerHTML = '<i data-lucide="sparkles"></i> Buy';
         lucide.createIcons();
       }
+    }
+
+    // Display unlocked digital product content
+    function displayDigitalProduct(contentData, payData, paymentInfo) {
+      const results = document.getElementById('results');
+      const btn = document.getElementById('buy-btn');
+      const p = contentData.product;
+      const content = contentData.content;
+
+      // Build content-specific display
+      let contentHtml = '';
+      if (content.type === 'api-key') {
+        contentHtml = `
+          <div style="padding: 16px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.3);">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+              <i data-lucide="key" style="width: 18px; height: 18px; color: var(--success);"></i>
+              <span style="font-weight: 600; color: var(--success);">API Key Generated</span>
+            </div>
+            <div style="background: var(--bg); padding: 12px; border-radius: 8px; font-family: monospace; font-size: 13px; word-break: break-all; margin-bottom: 12px;">
+              ${content.apiKey}
+            </div>
+            <div style="font-size: 12px; color: var(--text-2);">
+              <div>Rate Limit: ${content.rateLimit}</div>
+              <div>Expires: ${new Date(content.expiresAt).toLocaleDateString()}</div>
+              <div>Endpoints: ${content.endpoints.join(', ')}</div>
+            </div>
+          </div>
+        `;
+      } else if (content.type === 'report') {
+        contentHtml = `
+          <div style="padding: 16px; background: rgba(139, 92, 246, 0.1); border-radius: 12px; border: 1px solid rgba(139, 92, 246, 0.3);">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+              <i data-lucide="file-text" style="width: 18px; height: 18px; color: var(--accent);"></i>
+              <span style="font-weight: 600; color: var(--accent);">${content.title}</span>
+            </div>
+            <div style="display: grid; gap: 6px; margin-bottom: 12px;">
+              ${content.sections.map(s => `<div style="font-size: 12px; display: flex; gap: 6px;"><i data-lucide="check" style="width: 12px; height: 12px; color: var(--success); flex-shrink: 0;"></i>${s}</div>`).join('')}
+            </div>
+            <div style="font-size: 11px; color: var(--text-2); margin-bottom: 8px;">Access Token: ${content.accessToken}</div>
+            <a href="${content.downloadUrl}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: var(--accent); color: white; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none;">
+              <i data-lucide="download" style="width: 14px; height: 14px;"></i> Download Report
+            </a>
+          </div>
+        `;
+      } else if (content.type === 'code-template') {
+        contentHtml = `
+          <div style="padding: 16px; background: rgba(251, 191, 36, 0.1); border-radius: 12px; border: 1px solid rgba(251, 191, 36, 0.3);">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+              <i data-lucide="code" style="width: 18px; height: 18px; color: #fbbf24;"></i>
+              <span style="font-weight: 600; color: #fbbf24;">Code Template Unlocked</span>
+            </div>
+            <div style="display: grid; gap: 6px; margin-bottom: 12px;">
+              ${content.files.map(f => `<div style="font-size: 12px; font-family: monospace; display: flex; gap: 6px;"><i data-lucide="file-code" style="width: 12px; height: 12px; color: var(--text-2); flex-shrink: 0;"></i>${f}</div>`).join('')}
+            </div>
+            <div style="background: var(--bg); padding: 10px; border-radius: 6px; font-family: monospace; font-size: 11px; margin-bottom: 8px; overflow-x: auto;">
+              ${content.instructions}
+            </div>
+            <a href="${content.repoAccess}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: #fbbf24; color: #000; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none;">
+              <i data-lucide="github" style="width: 14px; height: 14px;"></i> Access Repository
+            </a>
+          </div>
+        `;
+      } else if (content.type === 'credits') {
+        contentHtml = `
+          <div style="padding: 16px; background: rgba(236, 72, 153, 0.1); border-radius: 12px; border: 1px solid rgba(236, 72, 153, 0.3);">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+              <i data-lucide="image" style="width: 18px; height: 18px; color: #ec4899;"></i>
+              <span style="font-weight: 600; color: #ec4899;">${content.creditBalance} AI Credits Added</span>
+            </div>
+            <div style="background: var(--bg); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+              <div style="font-size: 12px; color: var(--text-2); margin-bottom: 4px;">Your Credit Key:</div>
+              <div style="font-family: monospace; font-size: 13px; word-break: break-all;">${content.creditKey}</div>
+            </div>
+            <div style="font-size: 12px; color: var(--text-2);">
+              <div>Endpoint: ${content.endpoint}</div>
+              <div>Expires: ${new Date(content.expiresAt).toLocaleDateString()}</div>
+            </div>
+          </div>
+        `;
+      } else if (content.type === 'course') {
+        contentHtml = `
+          <div style="padding: 16px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.3);">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+              <i data-lucide="graduation-cap" style="width: 18px; height: 18px; color: var(--success);"></i>
+              <span style="font-weight: 600; color: var(--success);">Course Unlocked - ${content.totalDuration}</span>
+            </div>
+            <div style="display: grid; gap: 6px; margin-bottom: 12px;">
+              ${content.modules.slice(0, 5).map(m => `
+                <div style="font-size: 12px; display: flex; align-items: center; gap: 6px;">
+                  <i data-lucide="play-circle" style="width: 12px; height: 12px; color: var(--success);"></i>
+                  ${m.title || m} <span style="color: var(--text-2); font-size: 10px;">${m.duration || ''}</span>
+                </div>
+              `).join('')}
+              ${content.modules.length > 5 ? `<div style="font-size: 11px; color: var(--text-2);">+ ${content.modules.length - 5} more modules</div>` : ''}
+            </div>
+            <div style="font-size: 11px; color: var(--text-2);">Access Token: ${content.accessToken}</div>
+            ${content.certificate ? `<div style="font-size: 11px; color: var(--success); margin-top: 4px;"><i data-lucide="award" style="width: 12px; height: 12px; display: inline;"></i> Certificate included</div>` : ''}
+          </div>
+        `;
+      }
+
+      results.innerHTML = `
+        <div class="result">
+          <div class="result-header">
+            <div class="result-icon"><i data-lucide="unlock"></i></div>
+            <span class="result-title">Content Unlocked via x402</span>
+            <span class="result-status">Verified</span>
+          </div>
+          <div class="product">
+            <div class="product-icon"><i data-lucide="${getProductIcon(content.type)}"></i></div>
+            <div class="product-info">
+              <div class="product-name">${p.name}</div>
+              <div class="product-desc">${p.description}</div>
+            </div>
+            <div class="product-price">$${paymentInfo.payment.amount}</div>
+          </div>
+
+          <div style="margin: 16px 0; padding: 12px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border);">
+            <div style="font-size: 12px; font-weight: 600; color: var(--accent); margin-bottom: 8px;">x402 Protocol (Check Network Tab!)</div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size: 11px;">
+              <span style="padding: 4px 8px; background: rgba(251, 191, 36, 0.2); border-radius: 4px; color: #fbbf24;">1. GET → 402</span>
+              <span style="padding: 4px 8px; background: rgba(139, 92, 246, 0.2); border-radius: 4px; color: var(--accent);">2. USDC Transfer</span>
+              <span style="padding: 4px 8px; background: rgba(16, 185, 129, 0.2); border-radius: 4px; color: var(--success);">3. GET + TxHash → 200</span>
+            </div>
+          </div>
+
+          <div class="order-row">
+            <span class="order-label">Transaction</span>
+            <span class="order-value"><a href="https://testnet.arcscan.app/tx/${payData.txHash}" target="_blank" style="color: var(--accent);">${payData.txHash.slice(0,12)}...${payData.txHash.slice(-8)}</a></span>
+          </div>
+
+          ${contentData.contentHash ? `
+          <div class="order-row">
+            <span class="order-label">Content Hash</span>
+            <span class="order-value" style="font-family: monospace; font-size: 11px;">${contentData.contentHash.slice(0,18)}...</span>
+          </div>
+          ` : ''}
+
+          ${contentData.receipt ? `
+          <div style="margin: 12px 0; padding: 12px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3);">
+            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+              <i data-lucide="shield-check" style="width: 14px; height: 14px; color: var(--success);"></i>
+              <span style="font-size: 12px; font-weight: 600; color: var(--success);">EIP-712 Receipt</span>
+            </div>
+            <div style="font-size: 10px; color: var(--text-2);">
+              <div>Merchant: ${contentData.receipt.merchant?.slice(0,10)}...${contentData.receipt.merchant?.slice(-6) || 'N/A'}</div>
+              <div>Signature: ${contentData.receipt.signature?.slice(0,20)}...</div>
+              <div style="margin-top: 4px; color: var(--success);">Cryptographic proof of delivery</div>
+            </div>
+          </div>
+          ` : ''}
+
+          ${contentHtml}
+        </div>
+      `;
+
+      btn.disabled = false;
+      btn.innerHTML = '<i data-lucide="sparkles"></i> Buy';
+      lucide.createIcons();
+    }
+
+    function getProductIcon(type) {
+      const icons = { 'api-key': 'key', 'report': 'file-text', 'code-template': 'code', 'credits': 'image', 'course': 'graduation-cap' };
+      return icons[type] || 'package';
+    }
+
+    // Display x402 success with real network request data
+    function displayX402Success(contentData, payData, x402Steps, paymentInfo) {
+      const results = document.getElementById('results');
+      const btn = document.getElementById('buy-btn');
+      const p = contentData.product;
+      const content = contentData.content;
+
+      results.innerHTML = `
+        <div class="result">
+          <div class="result-header">
+            <div class="result-icon"><i data-lucide="check"></i></div>
+            <span class="result-title">Purchase Complete via x402</span>
+            <span class="result-status">Verified</span>
+          </div>
+          <div class="product">
+            <div class="product-icon"><i data-lucide="graduation-cap"></i></div>
+            <div class="product-info">
+              <div class="product-name">${p.name}</div>
+              <div class="product-desc">${p.description || ''}</div>
+            </div>
+            <div class="product-price">$${paymentInfo.payment.amount}</div>
+          </div>
+
+          <div style="margin: 20px 0; padding: 16px; background: var(--bg); border-radius: 12px; border: 1px solid var(--accent);">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+              <i data-lucide="activity" style="width: 18px; height: 18px; color: var(--accent);"></i>
+              <span style="font-weight: 600; color: var(--accent);">x402 Protocol Flow (Check Network Tab!)</span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <div style="width: 28px; height: 28px; background: rgba(251, 191, 36, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  <span style="font-size: 12px; font-weight: 700; color: #fbbf24;">1</span>
+                </div>
+                <div>
+                  <div style="font-weight: 500; margin-bottom: 4px;">GET /api/x402/course</div>
+                  <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <span style="padding: 3px 8px; background: rgba(251, 191, 36, 0.2); border-radius: 4px; font-size: 11px; font-weight: 600; color: #fbbf24;">HTTP 402</span>
+                    <span style="padding: 3px 8px; background: rgba(255,255,255,0.1); border-radius: 4px; font-size: 10px; font-family: monospace;">X-Payment-Amount: ${paymentInfo.payment.amount}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <div style="width: 28px; height: 28px; background: rgba(139, 92, 246, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  <span style="font-size: 12px; font-weight: 700; color: var(--accent);">2</span>
+                </div>
+                <div>
+                  <div style="font-weight: 500; margin-bottom: 4px;">USDC Transfer on Arc Testnet</div>
+                  <a href="${EXPLORER}/tx/${payData.txHash}" target="_blank" style="font-size: 11px; color: var(--accent); font-family: monospace; word-break: break-all;">${payData.txHash}</a>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <div style="width: 28px; height: 28px; background: rgba(16, 185, 129, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  <span style="font-size: 12px; font-weight: 700; color: var(--success);">3</span>
+                </div>
+                <div>
+                  <div style="font-weight: 500; margin-bottom: 4px;">GET /api/x402/course + X-Payment-TxHash</div>
+                  <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <span style="padding: 3px 8px; background: rgba(16, 185, 129, 0.2); border-radius: 4px; font-size: 11px; font-weight: 600; color: var(--success);">HTTP 200</span>
+                    <span style="padding: 3px 8px; background: rgba(255,255,255,0.1); border-radius: 4px; font-size: 10px; font-family: monospace;">Content Delivered</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          ${content && content.modules ? `
+          <div style="padding: 16px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.3);">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+              <i data-lucide="unlock" style="width: 16px; height: 16px; color: var(--success);"></i>
+              <span style="font-weight: 600; color: var(--success);">Content Unlocked</span>
+            </div>
+            <div style="display: grid; gap: 6px;">
+              ${content.modules.slice(0, 5).map(m => `
+                <div style="font-size: 12px; display: flex; align-items: center; gap: 6px;">
+                  <i data-lucide="check-circle" style="width: 12px; height: 12px; color: var(--success);"></i>
+                  ${m}
+                </div>
+              `).join('')}
+              ${content.modules.length > 5 ? `<div style="font-size: 11px; color: var(--text-2);">+ ${content.modules.length - 5} more modules</div>` : ''}
+            </div>
+            ${content.accessUrl ? `<a href="${content.accessUrl}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding: 8px 14px; background: var(--success); color: #000; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none;"><i data-lucide="external-link" style="width: 12px; height: 12px;"></i> Access Course</a>` : ''}
+          </div>
+          ` : ''}
+        </div>
+      `;
+
+      btn.disabled = false;
+      btn.innerHTML = '<i data-lucide="sparkles"></i> Buy';
+      lucide.createIcons();
     }
 
     function getIcon(cat) {
@@ -814,9 +1384,11 @@
       setTimeout(() => toast.remove(), 2000);
     }
 
-    // Quick buttons
+    // Quick buttons - only set the input value, don't auto-buy
     document.querySelectorAll('.quick-btn').forEach(btn => {
-      btn.onclick = () => document.getElementById('query').value = btn.dataset.q;
+      btn.onclick = () => {
+        document.getElementById('query').value = btn.dataset.product || btn.dataset.q;
+      };
     });
 
     // Enter key to search

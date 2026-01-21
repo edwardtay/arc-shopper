@@ -34,13 +34,43 @@ function getEntitySecret(): string {
   return secret;
 }
 
+// Cache for Circle's public key
+let circlePublicKey: string | null = null;
+
+// Fetch Circle's public key for encrypting entity secret
+async function getCirclePublicKey(): Promise<string> {
+  if (circlePublicKey) return circlePublicKey;
+
+  const response = await axios.get(
+    `${CIRCLE_API_URL}/config/entity/publicKey`,
+    { headers: getHeaders(), timeout: 10000 }
+  );
+
+  circlePublicKey = response.data?.data?.publicKey;
+  if (!circlePublicKey) throw new Error('Failed to fetch Circle public key');
+  return circlePublicKey;
+}
+
 // Encrypt entity secret for API requests
 async function getEntitySecretCiphertext(): Promise<string> {
-  // For Circle API, we need to encrypt the entity secret with their public key
-  // In production, fetch the public key from Circle and encrypt properly
-  // For demo, we'll use a placeholder approach
+  const publicKeyPem = await getCirclePublicKey();
   const entitySecret = getEntitySecret();
-  return Buffer.from(entitySecret).toString('base64');
+
+  // Entity secret must be 32 bytes hex - pad/trim if needed
+  const secretHex = entitySecret.padEnd(64, '0').slice(0, 64);
+  const secretBuffer = Buffer.from(secretHex, 'hex');
+
+  // Encrypt with Circle's RSA public key
+  const encrypted = crypto.publicEncrypt(
+    {
+      key: publicKeyPem,
+      padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+      oaepHash: 'sha256',
+    },
+    secretBuffer
+  );
+
+  return encrypted.toString('base64');
 }
 
 export function isCircleConfigured(): boolean {
